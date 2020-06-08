@@ -46,6 +46,11 @@ const router = new Router({
           component: () => import('@/views/auth/Login.vue')
         },
         {
+          path: '/auth/register',
+          name: 'auth-register',
+          component: () => import('@/views/auth/register/Register.vue'),
+        },
+        {
           path: '/pages/error-404',
           name: 'page-error-404',
           component: () => import('@/views/pages/Error404.vue')
