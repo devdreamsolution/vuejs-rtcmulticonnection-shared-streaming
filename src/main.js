@@ -54,6 +54,9 @@ import store from './store/store'
 import { VueHammer } from 'vue2-hammer'
 Vue.use(VueHammer)
 
+// VeeValidate
+import VeeValidate from 'vee-validate'
+Vue.use(VeeValidate)
 
 // PrismJS
 import 'prismjs'
