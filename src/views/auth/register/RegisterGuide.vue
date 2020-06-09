@@ -9,16 +9,28 @@ Author URL: http://www.themeforest.net/user/pixinvent
 
 
 <template>
-  <div class="clearfix">
+  <form>
     <vs-input
-      v-validate="'required|alpha_dash|min:3'"
+      v-validate="'required|alpha_dash'"
       data-vv-validate-on="blur"
       label-placeholder="Name"
-      name="displayName"
+      name="name"
       placeholder="Name"
-      v-model="displayName"
-      class="w-full" />
-    <span class="text-danger text-sm">{{ errors.first('displayName') }}</span>
+      v-model="name"
+      class="w-full"
+    />
+    <span class="text-danger text-sm">{{ errors.first('name') }}</span>
+
+    <vs-input
+      v-validate="'required|alpha_dash'"
+      data-vv-validate-on="blur"
+      label-placeholder="Surename"
+      name="surename"
+      placeholder="Surename"
+      v-model="surename"
+      class="w-full mt-6"
+    />
+    <span class="text-danger text-sm">{{ errors.first('surename') }}</span>
 
     <vs-input
       v-validate="'required|email'"
@@ -28,8 +40,56 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Email"
       placeholder="Email"
       v-model="email"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('email') }}</span>
+
+    <div>
+      <vs-avatar :src="url" size="130px" class="mt-6"></vs-avatar>
+      <vs-input
+        type="file"
+        name="picture"
+        v-validate="'required'"
+        data-vv-validate-on="blur"
+        v-model="picture"
+        class="w-full"
+        @change="onFileChange"
+      />
+      <span class="text-danger text-sm">{{ errors.first('picture') }}</span>
+    </div>
+
+    <vs-input
+      v-validate="'required|numeric'"
+      data-vv-validate-on="blur"
+      name="age"
+      label-placeholder="Age"
+      placeholder="Age"
+      v-model="age"
+      class="w-full mt-6"
+    />
+    <span class="text-danger text-sm">{{ errors.first('age') }}</span>
+
+    <vs-input
+      v-validate="'required|between:0,9999999999'"
+      data-vv-validate-on="blur"
+      name="vat"
+      label-placeholder="VAT"
+      placeholder="VAT"
+      v-model="vat"
+      class="w-full mt-6"
+    />
+    <span class="text-danger text-sm">{{ errors.first('vat') }}</span>
+
+    <vs-input
+      v-validate="'required'"
+      data-vv-validate-on="blur"
+      name="address"
+      label-placeholder="Address or City"
+      placeholder="Address or City"
+      v-model="address"
+      class="w-full mt-6"
+    />
+    <span class="text-danger text-sm">{{ errors.first('address') }}</span>
 
     <vs-input
       ref="password"
@@ -40,7 +100,8 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Password"
       placeholder="Password"
       v-model="password"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('password') }}</span>
 
     <vs-input
@@ -52,13 +113,14 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Confirm Password"
       placeholder="Confirm Password"
       v-model="confirm_password"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('confirm_password') }}</span>
 
     <vs-checkbox v-model="isTermsConditionAccepted" class="mt-6">I accept the terms & conditions.</vs-checkbox>
     <vs-button  type="border" to="/auth/login" class="mt-6">Login</vs-button>
-    <vs-button class="float-right mt-6" @click="registerUserJWt" :disabled="!validateForm">Register</vs-button>
-  </div>
+    <vs-button class="float-right mt-6" @click.prevent="submitForm" :disabled="!isTermsConditionAccepted">Register</vs-button>
+  </form>
 </template>
 
 <script>
@@ -73,48 +135,65 @@ export default {
       age: '',
       vat: '',
       address: '',
-      isTermsConditionAccepted: true
-    }
-  },
-  computed: {
-    validateForm () {
-      return !this.errors.any() && this.displayName !== '' && this.email !== '' && this.password !== '' && this.confirm_password !== '' && this.isTermsConditionAccepted === true
+      isTermsConditionAccepted: true,
+      picture: null,
+      file: null,
+      url: ''
     }
   },
   methods: {
-    checkLogin () {
-      // If user is already logged in notify
-      if (this.$store.state.auth.isUserLoggedIn()) {
+    submitForm () {
+      this.$validator.validateAll().then(isValid => {
+        if (isValid) {
+          this.$vs.loading()
 
-        // Close animation if passed as payload
-        // this.$vs.loading.close()
+          const payload = {
+            userDetails: {
+              username: this.email,
+              name: this.name,
+              surename: this.surename,
+              password: this.password,
+              confirmPassword: this.confirm_password,
+              roles: 1,
+              lang: 'en',
+              city_residence: null,
+              group_age: null,
+              gender: null,
+              address: this.address,
+              age: this.age,
+              vat: this.vat,
+              picture: this.file,
+            },
+            notify: this.$vs.notify
+          }
+          this.$store.dispatch('auth/registerUserJWT', payload)
+          .then(() => { this.$vs.loading.close() })
+          .catch(error => {
+            this.$vs.loading.close()
+            this.$vs.notify({
+              title: 'Error',
+              text: error.message,
+              iconPack: 'feather',
+              icon: 'icon-alert-circle',
+              color: 'danger'
+            })
+          })
+        } else {
 
-        this.$vs.notify({
-          title: 'Login Attempt',
-          text: 'You are already logged in!',
-          iconPack: 'feather',
-          icon: 'icon-alert-circle',
-          color: 'warning'
-        })
-
-        return false
-      }
-      return true
+        }
+      })
     },
-    registerUserJWt () {
-      // If form is not validated or user is already login return
-      if (!this.validateForm || !this.checkLogin()) return
 
-      const payload = {
-        userDetails: {
-          displayName: this.displayName,
-          email: this.email,
-          password: this.password,
-          confirmPassword: this.confirm_password
-        },
-        notify: this.$vs.notify
+    onFileChange (e) {
+      const file = e.target.files[0];
+
+      if (file) {
+        this.url = URL.createObjectURL(file)
+        this.file = file
+      } else {
+        this.url = ''
+        this.file = null
       }
-      this.$store.dispatch('auth/registerUserJWT', payload)
     }
   }
 }

@@ -44,19 +44,45 @@ export default {
       return Promise.reject(error)
     })
   },
-  login (username, pwd) {
+
+  login (username, password) {
     return axios.post('/api/login/token', {
       username,
-      password: pwd
+      password: password
     })
   },
-  registerUser (name, email, pwd) {
-    return axios.post('/api/auth/register', {
-      displayName: name,
-      email,
-      password: pwd
-    })
+
+  registerUser (username, name, surename, password, roles, lang = 'en', city_residence = null, group_age = null, gender = null, address = null, age = null, vat = null, picture = null) {
+    let rawData = {
+      username,
+      name: name,
+      surename: surename,
+      password: password,
+      roles: roles,
+      lang: lang,
+      city_residence: city_residence,
+      group_age: group_age,
+      gender: gender,
+      address: address,
+      age: age,
+      vat: vat,
+    }
+
+    let formData = new FormData()
+
+    formData.append('picture', picture)
+    formData.append('data', JSON.stringify(rawData))
+
+    return axios.post('/api/user/register',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      },
+    )
   },
+
   refreshToken () {
     return axios.post('/api/auth/refresh-token', {accessToken: localStorage.getItem('accessToKen')})
   }

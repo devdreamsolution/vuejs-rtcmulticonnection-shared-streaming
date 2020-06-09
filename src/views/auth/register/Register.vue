@@ -9,9 +9,9 @@
 
 
 <template>
-    <div class="h-screen flex w-full bg-img vx-row no-gutter items-center justify-center">
+    <div class="flex w-full bg-img vx-row no-gutter items-center justify-center">
         <div class="vx-col sm:w-1/2 md:w-1/2 lg:w-3/4 xl:w-3/5 sm:m-0 m-4">
-            <vx-card>
+            <vx-card style="margin-top:20px; margin-bottom: 20px;">
                 <div slot="no-body" class="full-page-bg-color">
                     <div class="vx-row no-gutter">
                         <div class="vx-col hidden sm:hidden md:hidden lg:block lg:w-1/2 mx-auto self-center">

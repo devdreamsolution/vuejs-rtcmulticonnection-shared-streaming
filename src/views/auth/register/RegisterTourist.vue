@@ -9,9 +9,9 @@ Author URL: http://www.themeforest.net/user/pixinvent
 
 
 <template>
-  <div class="clearfix">
+  <form>
     <vs-input
-      v-validate="'required|alpha_dash|min:3'"
+      v-validate="'required|alpha_dash'"
       data-vv-validate-on="blur"
       label-placeholder="Name"
       name="name"
@@ -22,7 +22,7 @@ Author URL: http://www.themeforest.net/user/pixinvent
     <span class="text-danger text-sm">{{ errors.first('name') }}</span>
 
     <vs-input
-      v-validate="'required|alpha_dash|min:3'"
+      v-validate="'required|alpha_dash'"
       data-vv-validate-on="blur"
       label-placeholder="Surename"
       name="surename"
@@ -49,13 +49,13 @@ Author URL: http://www.themeforest.net/user/pixinvent
       name="city_residence"
       label-placeholder="City of Recidence"
       placeholder="City of Recidence"
-      v-model="city_recidence"
+      v-model="city_residence"
       class="w-full mt-6"
     />
     <span class="text-danger text-sm">{{ errors.first('city_residence') }}</span>
 
     <vs-input
-      v-validate="'required'"
+      v-validate="'required|numeric'"
       data-vv-validate-on="blur"
       name="group_age"
       label-placeholder="Group of Age"
@@ -100,8 +100,8 @@ Author URL: http://www.themeforest.net/user/pixinvent
 
     <vs-checkbox v-model="isTermsConditionAccepted" class="mt-6">I accept the terms & conditions.</vs-checkbox>
     <vs-button  type="border" to="/auth/login" class="mt-6">Login</vs-button>
-    <vs-button class="float-right mt-6" @click="registerUserJWt" :disabled="!validateForm">Register</vs-button>
-  </div>
+    <vs-button class="float-right mt-6" @click.prevent="submitForm" :disabled="!isTermsConditionAccepted">Register</vs-button>
+  </form>
 </template>
 
 <script>
@@ -119,45 +119,47 @@ export default {
       isTermsConditionAccepted: true
     }
   },
-  computed: {
-    validateForm () {
-      return !this.errors.any() && this.displayName !== '' && this.email !== '' && this.password !== '' && this.confirm_password !== '' && this.isTermsConditionAccepted === true
-    }
-  },
   methods: {
-    checkLogin () {
-      // If user is already logged in notify
-      if (this.$store.state.auth.isUserLoggedIn()) {
+    submitForm () {
+      this.$validator.validateAll().then(isValid => {
+        if (isValid) {
+          this.$vs.loading()
 
-        // Close animation if passed as payload
-        // this.$vs.loading.close()
+          const payload = {
+            userDetails: {
+              username: this.email,
+              name: this.name,
+              surename: this.surename,
+              password: this.password,
+              confirmPassword: this.confirm_password,
+              roles: 0,
+              lang: 'en',
+              city_residence: this.city_residence,
+              group_age: this.group_age,
+              gender: this.gender,
+              address: null,
+              age: null,
+              vat: null,
+              picture: null,
+            },
+            notify: this.$vs.notify
+          }
+          this.$store.dispatch('auth/registerUserJWT', payload)
+          .then(() => { this.$vs.loading.close() })
+          .catch(error => {
+            this.$vs.loading.close()
+            this.$vs.notify({
+              title: 'Error',
+              text: error.message,
+              iconPack: 'feather',
+              icon: 'icon-alert-circle',
+              color: 'danger'
+            })
+          })
+        } else {
 
-        this.$vs.notify({
-          title: 'Login Attempt',
-          text: 'You are already logged in!',
-          iconPack: 'feather',
-          icon: 'icon-alert-circle',
-          color: 'warning'
-        })
-
-        return false
-      }
-      return true
-    },
-    registerUserJWt () {
-      // If form is not validated or user is already login return
-      if (!this.validateForm || !this.checkLogin()) return
-
-      const payload = {
-        userDetails: {
-          displayName: this.displayName,
-          email: this.email,
-          password: this.password,
-          confirmPassword: this.confirm_password
-        },
-        notify: this.$vs.notify
-      }
-      this.$store.dispatch('auth/registerUserJWT', payload)
+        }
+      })
     }
   }
 }
