@@ -36,20 +36,12 @@
         <template v-if="dataImg">
           <!-- Image Container -->
           <div class="img-container w-64 mx-auto flex items-center justify-center">
-            <img :src="dataImg" alt="img" class="responsive" />
+            <vx-qrcode :value="dataImg" :size=220 class="responsive" />
           </div>
 
           <!-- Image upload Buttons -->
-          <div class="modify-img flex justify-between mt-5">
-            <input
-              type="file"
-              class="hidden"
-              ref="updateImgInput"
-              @change="updateCurrImg"
-              accept="image/*"
-            />
-            <vs-button class="mr-4" type="flat" @click="$refs.updateImgInput.click()">Update QrCode</vs-button>
-            <vs-button type="flat" color="#999" @click="dataImg = null">Remove QrCode</vs-button>
+          <div class="w-64 mx-auto flex items-center justify-center mt-5">
+            <vs-button class="mr-4" type="flat" @click="updateCurrQrCode">Update QrCode</vs-button>
           </div>
         </template>
 
@@ -71,7 +63,8 @@
           label="Description"
           v-model="dataDescription"
           class="mt-5 w-full"
-          v-validate="{ required: true, regex: /\d+(\.\d+)?$/ }"
+          rows="5"
+          v-validate="'required'"
           name="item-description"
         />
         <span
@@ -83,14 +76,7 @@
         <!-- <vs-upload text="Upload Image" class="img-upload" ref="fileUpload" /> -->
 
         <div class="upload-img mt-5" v-if="!dataImg">
-          <input
-            type="file"
-            class="hidden"
-            ref="uploadImgInput"
-            @change="updateCurrImg"
-            accept="image/*"
-          />
-          <vs-button @click="$refs.uploadImgInput.click()">Upload Image</vs-button>
+          <vs-button @click="updateCurrQrCode">Generate QrCode</vs-button>
         </div>
       </div>
     </component>
@@ -122,25 +108,10 @@ export default {
   data() {
     return {
       dataId: null,
-      dataName: "",
-      dataCategory: null,
-      dataImg: null,
-      dataOrder_status: "pending",
-      dataPrice: 0,
+      dataTitle: "",
+      dataImg: "",
+      dataDescription: "",
 
-      category_choices: [
-        { text: "Audio", value: "audio" },
-        { text: "Computers", value: "computers" },
-        { text: "Fitness", value: "fitness" },
-        { text: "Appliance", value: "appliance" }
-      ],
-
-      order_status_choices: [
-        { text: "Pending", value: "pending" },
-        { text: "Canceled", value: "canceled" },
-        { text: "Delivered", value: "delivered" },
-        { text: "On Hold", value: "on_hold" }
-      ],
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
@@ -155,15 +126,13 @@ export default {
         this.initValues();
         this.$validator.reset();
       } else {
-        const { category, id, img, name, order_status, price } = JSON.parse(
+        const { description, id, qr_url, name } = JSON.parse(
           JSON.stringify(this.data)
         );
         this.dataId = id;
-        this.dataCategory = category;
-        this.dataImg = img;
-        this.dataName = name;
-        this.dataOrder_status = order_status;
-        this.dataPrice = price;
+        this.dataDescription = description;
+        this.dataImg = qr_url;
+        this.dataTitle = name;
         this.initValues();
       }
       // Object.entries(this.data).length === 0 ? this.initValues() : { this.dataId, this.dataName, this.dataCategory, this.dataOrder_status, this.dataPrice } = JSON.parse(JSON.stringify(this.data))
@@ -183,12 +152,7 @@ export default {
       }
     },
     isFormValid() {
-      return (
-        !this.errors.any() &&
-        this.dataName &&
-        this.dataCategory &&
-        this.dataPrice > 0
-      );
+      return !this.errors.any() && this.dataTitle && this.dataDescription;
     },
     scrollbarTag() {
       return this.$store.getters.scrollbarTag;
@@ -197,23 +161,19 @@ export default {
   methods: {
     initValues() {
       if (this.data.id) return;
+      this.dataImg = "";
       this.dataId = null;
-      this.dataName = "";
-      this.dataCategory = null;
-      this.dataOrder_status = "pending";
-      this.dataPrice = 0;
-      this.dataImg = null;
+      this.dataTitle = "";
+      this.dataDescription = "";
     },
     submitData() {
       this.$validator.validateAll().then(result => {
         if (result) {
           const obj = {
             id: this.dataId,
-            name: this.dataName,
+            title: this.dataTitle,
             img: this.dataImg,
-            category: this.dataCategory,
-            order_status: this.dataOrder_status,
-            price: this.dataPrice
+            description: this.dataDescription
           };
 
           if (this.dataId !== null && this.dataId >= 0) {
@@ -227,21 +187,12 @@ export default {
               console.error(err);
             });
           }
-
           this.$emit("closeSidebar");
           this.initValues();
         }
       });
     },
-    updateCurrImg(input) {
-      if (input.target.files && input.target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          this.dataImg = e.target.result;
-        };
-        reader.readAsDataURL(input.target.files[0]);
-      }
-    }
+    updateCurrQrCode(input) {}
   }
 };
 </script>

@@ -70,6 +70,7 @@ export default {
   methods: {
     logout() {
       localStorage.removeItem("UserInfo");
+      localStorage.removeItem("AccessToken");
       // This is just for demo Purpose. If user clicks on logout -> redirect
       this.$router.push("/auth/login").catch(() => {});
     }

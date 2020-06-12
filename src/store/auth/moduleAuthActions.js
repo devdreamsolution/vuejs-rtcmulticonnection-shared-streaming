@@ -28,6 +28,8 @@ export default {
               JSON.stringify(response.data.userdata)
             );
 
+            localStorage.setItem("AccessToken", response.data.token);
+
             // Set bearer token in axios
             commit("SET_BEARER", response.data.token);
 
@@ -93,6 +95,10 @@ export default {
               "UserInfo",
               JSON.stringify(response.data.userdata)
             );
+            localStorage.setItem("AccessToken", response.data.token);
+
+            // Set bearer token in axios
+            commit("SET_BEARER", response.data.token);
 
             resolve(response);
           } else {

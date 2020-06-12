@@ -15,6 +15,7 @@ import VxList  from './components/vx-list/VxList.vue'
 import VxBreadcrumb  from './layouts/components/VxBreadcrumb.vue'
 import FeatherIcon  from './components/FeatherIcon.vue'
 import VxInputGroup  from './components/vx-input-group/VxInputGroup.vue'
+import VxQrCode from './components/vx-qrcode/VxQrcode.vue'
 
 Vue.component(VxTooltip.name, VxTooltip)
 Vue.component(VxCard.name, VxCard)
@@ -22,7 +23,7 @@ Vue.component(VxList.name, VxList)
 Vue.component(VxBreadcrumb.name, VxBreadcrumb)
 Vue.component(FeatherIcon.name, FeatherIcon)
 Vue.component(VxInputGroup.name, VxInputGroup)
-
+Vue.component(VxQrCode.name, VxQrCode)
 
 // v-select component
 import vSelect from 'vue-select'

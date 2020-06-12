@@ -9,6 +9,7 @@
 
 import Vue from "vue";
 import Router from "vue-router";
+import axios from './http/axios/index.js'
 
 Vue.use(Router);
 
@@ -97,6 +98,11 @@ router.beforeEach((to, from, next) => {
     }
   } else if (loggedIn && !to.meta.error) {
     return next("/");
+  }
+  if(loggedIn)
+  {
+    const token = localStorage.getItem("AccessToken");
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
   return next();
 });

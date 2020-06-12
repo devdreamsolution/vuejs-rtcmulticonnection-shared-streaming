@@ -1,12 +1,3 @@
-/*=========================================================================================
-  File Name: moduleCalendarActions.js
-  Description: Calendar Module Actions
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
-==========================================================================================*/
-
 import axios from '@/axios.js'
 
 export default {
@@ -22,9 +13,9 @@ export default {
   },
   fetchDataListItems ({ commit }) {
     return new Promise((resolve, reject) => {
-      axios.get('/api/data-list/products')
+      axios.get('/api/room/list')
         .then((response) => {
-          commit('SET_PRODUCTS', response.data)
+          commit('SET_ROOMS', response.data)
           resolve(response)
         })
         .catch((error) => { reject(error) })

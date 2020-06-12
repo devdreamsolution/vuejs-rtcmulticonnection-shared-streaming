@@ -1,12 +1,3 @@
-<!-- =========================================================================================
-  File Name: DataListThumbView.vue
-  Description: Data List - Thumb View
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
 <template>
   <div id="data-list-thumb-view" class="data-list-container">
     <data-view-sidebar
@@ -31,7 +22,7 @@
             class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-danger border border-solid border-danger"
           >
             <feather-icon icon="DeleteIcon" svgClasses="h-4 w-4" />
-            <span class="ml-2 text-base text-danger">Delete</span>
+            <span class="ml-2 text-base text-danger" @click="removeSeletedData">Delete</span>
           </div>
 
           <!-- ADD NEW -->
@@ -54,7 +45,6 @@
             >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ products.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : products.length }} of {{ queriedItems }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
-          <!-- <vs-button class="btn-drop" type="line" color="primary" icon-pack="feather" icon="icon-chevron-down"></vs-button> -->
           <vs-dropdown-menu>
             <vs-dropdown-item @click="itemsPerPage=4">
               <span>4</span>
@@ -81,9 +71,12 @@
 
       <template slot-scope="{data}">
         <tbody>
-          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+          <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
             <vs-td class="img-container">
-              <img :src="tr.img" class="product-img" />
+              <a @click.stop="showRoom(tr.id)">
+                <vx-qrcode :value="tr.qr_url" :size=100 class="product-img"  @click.stop="editData(tr)"/>
+              </a>
+
             </vs-td>
 
             <vs-td>
@@ -91,15 +84,7 @@
             </vs-td>
 
             <vs-td>
-              <p class="product-category">{{ tr.category }}</p>
-            </vs-td>
-
-            <vs-td>
-              <vs-progress
-                :percent="Number(tr.popularity)"
-                :color="getPopularityColor(Number(tr.popularity))"
-                class="shadow-md"
-              />
+              <p class="product-category">{{ tr.description }}</p>
             </vs-td>
 
             <vs-td class="whitespace-no-wrap">
@@ -125,6 +110,7 @@
 <script>
 import DataViewSidebar from "./module/DataViewSidebar.vue";
 import moduleDataList from "@/store/room/moduleDataList.js";
+import router from "@/router";
 
 export default {
   components: {
@@ -148,7 +134,7 @@ export default {
       return 0;
     },
     products() {
-      return this.$store.state.dataList.products;
+      return this.$store.state.dataList.rooms;
     },
     queriedItems() {
       return this.$refs.table
@@ -166,23 +152,31 @@ export default {
         console.error(err);
       });
     },
+    removeSeletedData()
+    {
+       if(this.selected.length > 0)
+       {
+         this.$swal({
+                    title: "Are you sure?",
+                    text: "You will not be able to recover this data!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true}).then((willDelete) => {
+                      if(willDelete)
+                      {
+
+                      }
+                  });
+       }
+    },
+    showRoom(id)
+    {
+      router.push(`/room/${id}/view`);
+    },
     editData(data) {
       // this.sidebarData = JSON.parse(JSON.stringify(this.blankData))
       this.sidebarData = data;
       this.toggleDataSidebar(true);
-    },
-    getOrderStatusColor(status) {
-      if (status === "on_hold") return "warning";
-      if (status === "delivered") return "success";
-      if (status === "canceled") return "danger";
-      return "primary";
-    },
-    getPopularityColor(num) {
-      if (num > 90) return "success";
-      if (num > 70) return "primary";
-      if (num >= 50) return "warning";
-      if (num < 50) return "danger";
-      return "primary";
     },
     toggleDataSidebar(val = false) {
       this.addNewDataSidebar = val;

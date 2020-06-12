@@ -58,6 +58,10 @@ Vue.use(VueHammer)
 import VeeValidate from 'vee-validate'
 Vue.use(VeeValidate)
 
+// VueSwal
+import VueSwal from 'vue-swal'
+Vue.use(VueSwal)
+
 // PrismJS
 import 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'

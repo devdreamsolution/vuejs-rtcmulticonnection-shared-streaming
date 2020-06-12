@@ -12,8 +12,8 @@ export default {
   ADD_ITEM (state, item) {
     state.products.unshift(item)
   },
-  SET_PRODUCTS (state, products) {
-    state.products = products
+  SET_ROOMS (state, rooms) {
+    state.rooms = rooms
   },
   // SET_LABELS(state, labels) {
   //   state.eventLabels = labels
