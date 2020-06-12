@@ -7,70 +7,97 @@
   Author URL: http://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
 
+import Vue from "vue";
+import Router from "vue-router";
 
-import Vue from 'vue'
-import Router from 'vue-router'
-
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  scrollBehavior () {
-    return { x: 0, y: 0 }
+  scrollBehavior() {
+    return { x: 0, y: 0 };
   },
   routes: [
     {
-      path: '',
-      component: () => import('./layouts/main/Main.vue'),
+      path: "",
+      component: () => import("./layouts/main/Main.vue"),
       children: [
         {
-          path: '/',
-          name: 'home',
-          component: () => import('./views/Home.vue')
+          path: "/",
+          name: "home",
+          component: () => import("./views/Home.vue"),
+          meta: {
+            authRequired: "require"
+          }
         },
         {
-          path: '/page2',
-          name: 'page-2',
-          component: () => import('./views/Page2.vue')
-        },
-      ],
+          path: "/room",
+          name: "room",
+          component: () => import("./views/pages/room/Index.vue"),
+          meta: {
+            breadcrumb: [
+              { title: "Home", url: "/" },
+              { title: "Room" },
+              { title: "Room list", active: true }
+            ],
+            pageTitle: "Room Management",
+            rule: "editor",
+            authRequired: "require"
+          }
+        }
+      ]
     },
     {
-      path: '',
-      component: () => import('@/layouts/full-page/FullPage.vue'),
+      path: "",
+      component: () => import("@/layouts/full-page/FullPage.vue"),
       children: [
         {
-          path: '/auth/login',
-          name: 'auth-login',
-          component: () => import('@/views/auth/Login.vue')
+          path: "/auth/login",
+          name: "auth-login",
+          component: () => import("@/views/auth/Login.vue")
         },
         {
-          path: '/auth/register',
-          name: 'auth-register',
-          component: () => import('@/views/auth/register/Register.vue'),
+          path: "/auth/register",
+          name: "auth-register",
+          component: () => import("@/views/auth/register/Register.vue")
         },
         {
-          path: '/pages/error-404',
-          name: 'page-error-404',
-          component: () => import('@/views/pages/Error404.vue')
-        },
+          path: "/pages/error-404",
+          name: "page-error-404",
+          component: () => import("@/views/pages/Error404.vue"),
+          meta: {
+            error: "404"
+          }
+        }
       ]
     },
     // Redirect to 404 page, if no match found
     {
-        path: '*',
-        redirect: '/pages/error-404'
+      path: "*",
+      redirect: "/pages/error-404"
     }
-  ],
-})
+  ]
+});
 
 router.afterEach(() => {
   // Remove initial loading
-  const appLoading = document.getElementById('loading-bg')
-    if (appLoading) {
-        appLoading.style.display = "none";
-    }
-})
+  const appLoading = document.getElementById("loading-bg");
+  if (appLoading) {
+    appLoading.style.display = "none";
+  }
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const loggedIn = localStorage.getItem("UserInfo");
+  if (to.meta.authRequired) {
+    if (!loggedIn) {
+      return next("/auth/login");
+    }
+  } else if (loggedIn && !to.meta.error) {
+    return next("/");
+  }
+  return next();
+});
+export default router;

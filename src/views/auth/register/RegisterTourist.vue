@@ -40,7 +40,8 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Email"
       placeholder="Email"
       v-model="email"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('email') }}</span>
 
     <vs-input
@@ -83,7 +84,8 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Password"
       placeholder="Password"
       v-model="password"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('password') }}</span>
 
     <vs-input
@@ -95,35 +97,40 @@ Author URL: http://www.themeforest.net/user/pixinvent
       label-placeholder="Confirm Password"
       placeholder="Confirm Password"
       v-model="confirm_password"
-      class="w-full mt-6" />
+      class="w-full mt-6"
+    />
     <span class="text-danger text-sm">{{ errors.first('confirm_password') }}</span>
 
     <vs-checkbox v-model="isTermsConditionAccepted" class="mt-6">I accept the terms & conditions.</vs-checkbox>
-    <vs-button  type="border" to="/auth/login" class="mt-6">Login</vs-button>
-    <vs-button class="float-right mt-6" @click.prevent="submitForm" :disabled="!isTermsConditionAccepted">Register</vs-button>
+    <vs-button type="border" to="/auth/login" class="mt-6">Login</vs-button>
+    <vs-button
+      class="float-right mt-6"
+      @click.prevent="submitForm"
+      :disabled="!isTermsConditionAccepted"
+    >Register</vs-button>
   </form>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      name: '',
-      surename: '',
-      email: '',
-      city_residence: '',
-      group_age: '',
+      name: "",
+      surename: "",
+      email: "",
+      city_residence: "",
+      group_age: "",
       gender: 1,
-      password: '',
-      confirm_password: '',
+      password: "",
+      confirm_password: "",
       isTermsConditionAccepted: true
-    }
+    };
   },
   methods: {
-    submitForm () {
+    submitForm() {
       this.$validator.validateAll().then(isValid => {
         if (isValid) {
-          this.$vs.loading()
+          this.$vs.loading();
 
           const payload = {
             userDetails: {
@@ -133,34 +140,36 @@ export default {
               password: this.password,
               confirmPassword: this.confirm_password,
               roles: 0,
-              lang: 'en',
+              lang: "en",
               city_residence: this.city_residence,
               group_age: this.group_age,
               gender: this.gender,
               address: null,
               age: null,
               vat: null,
-              picture: null,
+              picture: null
             },
             notify: this.$vs.notify
-          }
-          this.$store.dispatch('auth/registerUserJWT', payload)
-          .then(() => { this.$vs.loading.close() })
-          .catch(error => {
-            this.$vs.loading.close()
-            this.$vs.notify({
-              title: 'Error',
-              text: error.message,
-              iconPack: 'feather',
-              icon: 'icon-alert-circle',
-              color: 'danger'
+          };
+          this.$store
+            .dispatch("auth/registerUserJWT", payload)
+            .then(() => {
+              this.$vs.loading.close();
             })
-          })
+            .catch(error => {
+              this.$vs.loading.close();
+              this.$vs.notify({
+                title: "Error",
+                text: error.message,
+                iconPack: "feather",
+                icon: "icon-alert-circle",
+                color: "danger"
+              });
+            });
         } else {
-
         }
-      })
+      });
     }
   }
-}
+};
 </script>
