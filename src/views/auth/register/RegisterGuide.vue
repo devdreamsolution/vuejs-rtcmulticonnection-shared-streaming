@@ -162,7 +162,7 @@ export default {
               address: this.address,
               age: this.age,
               vat: this.vat,
-              picture: this.file,
+              picture: this.file
             },
             notify: this.$vs.notify
           }
@@ -178,14 +178,12 @@ export default {
               color: 'danger'
             })
           })
-        } else {
-
         }
       })
     },
 
     onFileChange (e) {
-      const file = e.target.files[0];
+      const file = e.target.files[0]
 
       if (file) {
         this.url = URL.createObjectURL(file)

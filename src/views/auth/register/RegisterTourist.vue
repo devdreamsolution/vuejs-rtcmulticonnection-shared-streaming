@@ -113,24 +113,24 @@ Author URL: http://www.themeforest.net/user/pixinvent
 
 <script>
 export default {
-  data() {
+  data () {
     return {
-      name: "",
-      surename: "",
-      email: "",
-      city_residence: "",
-      group_age: "",
+      name: '',
+      surename: '',
+      email: '',
+      city_residence: '',
+      group_age: '',
       gender: 1,
-      password: "",
-      confirm_password: "",
+      password: '',
+      confirm_password: '',
       isTermsConditionAccepted: true
-    };
+    }
   },
   methods: {
-    submitForm() {
+    submitForm () {
       this.$validator.validateAll().then(isValid => {
         if (isValid) {
-          this.$vs.loading();
+          this.$vs.loading()
 
           const payload = {
             userDetails: {
@@ -140,7 +140,7 @@ export default {
               password: this.password,
               confirmPassword: this.confirm_password,
               roles: 0,
-              lang: "en",
+              lang: 'en',
               city_residence: this.city_residence,
               group_age: this.group_age,
               gender: this.gender,
@@ -150,26 +150,25 @@ export default {
               picture: null
             },
             notify: this.$vs.notify
-          };
+          }
           this.$store
-            .dispatch("auth/registerUserJWT", payload)
+            .dispatch('auth/registerUserJWT', payload)
             .then(() => {
-              this.$vs.loading.close();
+              this.$vs.loading.close()
             })
             .catch(error => {
-              this.$vs.loading.close();
+              this.$vs.loading.close()
               this.$vs.notify({
-                title: "Error",
+                title: 'Error',
                 text: error.message,
-                iconPack: "feather",
-                icon: "icon-alert-circle",
-                color: "danger"
-              });
-            });
-        } else {
+                iconPack: 'feather',
+                icon: 'icon-alert-circle',
+                color: 'danger'
+              })
+            })
         }
-      });
+      })
     }
   }
-};
+}
 </script>

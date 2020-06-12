@@ -48,7 +48,7 @@ import RegisterGuide from './RegisterGuide.vue'
 export default {
   components: {
     RegisterTourist,
-    RegisterGuide,
+    RegisterGuide
   }
 }
 </script>

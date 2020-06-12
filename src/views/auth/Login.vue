@@ -75,7 +75,7 @@
 import axios from 'axios'
 
 export default{
-  data() {
+  data () {
     return {
       email: "",
       password: "",

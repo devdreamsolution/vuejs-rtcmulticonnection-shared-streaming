@@ -73,10 +73,9 @@
         <tbody>
           <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
             <vs-td class="img-container">
-              <a @click.stop="showRoom(tr.id)">
+              <a @click.stop="showRoom(tr)">
                 <vx-qrcode :value="tr.qr_url" :size=100 class="product-img"  @click.stop="editData(tr)"/>
               </a>
-
             </vs-td>
 
             <vs-td>
@@ -108,15 +107,15 @@
 </template>
 
 <script>
-import DataViewSidebar from "./module/DataViewSidebar.vue";
-import moduleDataList from "@/store/room/moduleDataList.js";
-import router from "@/router";
+import DataViewSidebar from './module/DataViewSidebar.vue'
+import moduleDataList from '@/store/room/moduleDataList.js'
+import router from '@/router'
 
 export default {
   components: {
     DataViewSidebar
   },
-  data() {
+  data () {
     return {
       selected: [],
       // products: [],
@@ -124,75 +123,74 @@ export default {
       isMounted: false,
       addNewDataSidebar: false,
       sidebarData: {}
-    };
+    }
   },
   computed: {
-    currentPage() {
+    currentPage () {
       if (this.isMounted) {
-        return this.$refs.table.currentx;
+        return this.$refs.table.currentx
       }
       return 0;
     },
-    products() {
-      return this.$store.state.dataList.rooms;
+    products () {
+      return this.$store.state.dataList.rooms
     },
-    queriedItems() {
+    queriedItems () {
       return this.$refs.table
         ? this.$refs.table.queriedResults.length
         : this.products.length;
     }
   },
   methods: {
-    addNewData() {
-      this.sidebarData = {};
-      this.toggleDataSidebar(true);
+    addNewData () {
+      this.sidebarData = {}
+      this.toggleDataSidebar(true)
     },
-    deleteData(id) {
+    deleteData (id) {
       this.$store.dispatch("dataList/removeItem", id).catch(err => {
         console.error(err);
       });
     },
-    removeSeletedData()
+    removeSeletedData ()
     {
-       if(this.selected.length > 0)
-       {
-         this.$swal({
-                    title: "Are you sure?",
-                    text: "You will not be able to recover this data!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true}).then((willDelete) => {
-                      if(willDelete)
-                      {
+      if (this.selected.length > 0) {
+        this.$swal({
+          title: "Are you sure?",
+          text: "You will not be able to recover this data!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true
+        })
+        .then((willDelete) => {
+          if (willDelete) {
 
-                      }
-                  });
-       }
+          }
+        })
+      }
     },
-    showRoom(id)
-    {
-      router.push(`/room/${id}/view`);
+    showRoom (data) {
+      router.push(`/room/${data.id}/view`)
     },
-    editData(data) {
+    editData (data) {
       // this.sidebarData = JSON.parse(JSON.stringify(this.blankData))
-      this.sidebarData = data;
-      this.toggleDataSidebar(true);
+      this.sidebarData = data
+      this.toggleDataSidebar(true)
     },
-    toggleDataSidebar(val = false) {
-      this.addNewDataSidebar = val;
+    toggleDataSidebar (val = false) {
+      this.addNewDataSidebar = val
     }
   },
-  created() {
+  created () {
     if (!moduleDataList.isRegistered) {
-      this.$store.registerModule("dataList", moduleDataList);
-      moduleDataList.isRegistered = true;
+      this.$store.registerModule('dataList', moduleDataList)
+      moduleDataList.isRegistered = true
     }
-    this.$store.dispatch("dataList/fetchDataListItems");
+    this.$store.dispatch('dataList/fetchDataListItems')
   },
-  mounted() {
-    this.isMounted = true;
+  mounted () {
+    this.isMounted = true
   }
-};
+}
 </script>
 
 <style lang="scss">

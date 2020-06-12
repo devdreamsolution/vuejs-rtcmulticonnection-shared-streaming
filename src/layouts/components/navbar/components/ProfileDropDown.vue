@@ -63,17 +63,17 @@
 <script>
 export default {
   computed: {
-    activeUserInfo() {
-      return this.$store.state.AppActiveUser;
+    activeUserInfo () {
+      return this.$store.state.AppActiveUser
     }
   },
   methods: {
-    logout() {
-      localStorage.removeItem("UserInfo");
-      localStorage.removeItem("AccessToken");
+    logout () {
+      localStorage.removeItem('UserInfo')
+      localStorage.removeItem('AccessToken')
       // This is just for demo Purpose. If user clicks on logout -> redirect
-      this.$router.push("/auth/login").catch(() => {});
+      this.$router.push('/auth/login').catch(() => {})
     }
   }
-};
+}
 </script>

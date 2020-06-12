@@ -36,7 +36,7 @@
         <template v-if="dataImg">
           <!-- Image Container -->
           <div class="img-container w-64 mx-auto flex items-center justify-center">
-            <vx-qrcode :value="dataImg" :size=220 class="responsive" />
+            <vx-qrcode :value="dataImg" :size="220" class="responsive" />
           </div>
 
           <!-- Image upload Buttons -->
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import VuePerfectScrollbar from "vue-perfect-scrollbar";
+import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 
 export default {
   props: {
@@ -105,68 +105,68 @@ export default {
   components: {
     VuePerfectScrollbar
   },
-  data() {
+  data () {
     return {
       dataId: null,
-      dataTitle: "",
-      dataImg: "",
-      dataDescription: "",
+      dataTitle: '',
+      dataImg: '',
+      dataDescription: '',
 
       settings: {
         // perfectscrollbar settings
         maxScrollbarLength: 60,
         wheelSpeed: 0.6
       }
-    };
+    }
   },
   watch: {
-    isSidebarActive(val) {
-      if (!val) return;
+    isSidebarActive (val) {
+      if (!val) return
       if (Object.entries(this.data).length === 0) {
-        this.initValues();
-        this.$validator.reset();
+        this.initValues()
+        this.$validator.reset()
       } else {
         const { description, id, qr_url, name } = JSON.parse(
           JSON.stringify(this.data)
-        );
-        this.dataId = id;
-        this.dataDescription = description;
-        this.dataImg = qr_url;
-        this.dataTitle = name;
-        this.initValues();
+        )
+        this.dataId = id
+        this.dataDescription = description
+        this.dataImg = qr_url
+        this.dataTitle = name
+        this.initValues()
       }
       // Object.entries(this.data).length === 0 ? this.initValues() : { this.dataId, this.dataName, this.dataCategory, this.dataOrder_status, this.dataPrice } = JSON.parse(JSON.stringify(this.data))
     }
   },
   computed: {
     isSidebarActiveLocal: {
-      get() {
-        return this.isSidebarActive;
+      get () {
+        return this.isSidebarActive
       },
-      set(val) {
+      set (val) {
         if (!val) {
-          this.$emit("closeSidebar");
+          this.$emit('closeSidebar')
           // this.$validator.reset()
           // this.initValues()
         }
       }
     },
-    isFormValid() {
-      return !this.errors.any() && this.dataTitle && this.dataDescription;
+    isFormValid () {
+      return !this.errors.any() && this.dataTitle && this.dataDescription
     },
-    scrollbarTag() {
-      return this.$store.getters.scrollbarTag;
+    scrollbarTag () {
+      return this.$store.getters.scrollbarTag
     }
   },
   methods: {
-    initValues() {
-      if (this.data.id) return;
-      this.dataImg = "";
-      this.dataId = null;
-      this.dataTitle = "";
-      this.dataDescription = "";
+    initValues () {
+      if (this.data.id) return
+      this.dataImg = ''
+      this.dataId = null
+      this.dataTitle = ''
+      this.dataDescription = ''
     },
-    submitData() {
+    submitData () {
       this.$validator.validateAll().then(result => {
         if (result) {
           const obj = {
@@ -174,27 +174,29 @@ export default {
             title: this.dataTitle,
             img: this.dataImg,
             description: this.dataDescription
-          };
+          }
 
           if (this.dataId !== null && this.dataId >= 0) {
-            this.$store.dispatch("dataList/updateItem", obj).catch(err => {
-              console.error(err);
-            });
+            this.$store.dispatch('dataList/updateItem', obj).catch(err => {
+              console.error(err)
+            })
           } else {
             delete obj.id;
             obj.popularity = 0;
-            this.$store.dispatch("dataList/addItem", obj).catch(err => {
-              console.error(err);
-            });
+            this.$store.dispatch('dataList/addItem', obj).catch(err => {
+              console.error(err)
+            })
           }
-          this.$emit("closeSidebar");
-          this.initValues();
+          this.$emit('closeSidebar')
+          this.initValues()
         }
-      });
+      })
     },
-    updateCurrQrCode(input) {}
+    updateCurrQrCode (input) {
+
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
