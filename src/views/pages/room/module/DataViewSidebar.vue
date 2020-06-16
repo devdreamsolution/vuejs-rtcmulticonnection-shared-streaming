@@ -33,10 +33,10 @@
     >
       <div class="p-6">
         <!-- Product Image -->
-        <template v-if="dataImg">
+        <template v-if="dataQrCode">
           <!-- Image Container -->
           <div class="img-container w-64 mx-auto flex items-center justify-center">
-            <vx-qrcode :value="dataImg" :size="220" class="responsive" />
+            <vx-qrcode :value="dataQrCode" :size="220" class="responsive" />
           </div>
 
           <!-- Image upload Buttons -->
@@ -75,7 +75,7 @@
         <!-- Upload -->
         <!-- <vs-upload text="Upload Image" class="img-upload" ref="fileUpload" /> -->
 
-        <div class="upload-img mt-5" v-if="!dataImg">
+        <div class="upload-img mt-5" v-if="!dataQrCode">
           <vs-button @click="updateCurrQrCode">Generate QrCode</vs-button>
         </div>
       </div>
@@ -90,6 +90,8 @@
 
 <script>
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
+import randomstring from 'randomstring'
+import {apiURL} from '@/axios.js'
 
 export default {
   props: {
@@ -109,7 +111,7 @@ export default {
     return {
       dataId: null,
       dataTitle: '',
-      dataImg: '',
+      dataQrCode: '',
       dataDescription: '',
 
       settings: {
@@ -126,12 +128,12 @@ export default {
         this.initValues()
         this.$validator.reset()
       } else {
-        const { description, id, qr_url, name } = JSON.parse(
+        const { description, id, qr_code, name } = JSON.parse(
           JSON.stringify(this.data)
         )
         this.dataId = id
         this.dataDescription = description
-        this.dataImg = qr_url
+        this.dataQrCode = apiURL + '/room/view/' + qr_code
         this.dataTitle = name
         this.initValues()
       }
@@ -152,7 +154,7 @@ export default {
       }
     },
     isFormValid () {
-      return !this.errors.any() && this.dataTitle && this.dataDescription
+      return !this.errors.any() && this.dataTitle && this.dataDescription && this.dataQrCode
     },
     scrollbarTag () {
       return this.$store.getters.scrollbarTag
@@ -161,7 +163,7 @@ export default {
   methods: {
     initValues () {
       if (this.data.id) return
-      this.dataImg = ''
+      this.dataQrCode = ''
       this.dataId = null
       this.dataTitle = ''
       this.dataDescription = ''
@@ -169,21 +171,21 @@ export default {
     submitData () {
       this.$validator.validateAll().then(result => {
         if (result) {
+          let qr_code = this.dataQrCode.substring(this.dataQrCode.lastIndexOf('/') + 1)
           const obj = {
             id: this.dataId,
-            title: this.dataTitle,
-            img: this.dataImg,
+            name: this.dataTitle,
+            qr_code: qr_code,
             description: this.dataDescription
           }
 
           if (this.dataId !== null && this.dataId >= 0) {
-            this.$store.dispatch('dataList/updateItem', obj).catch(err => {
+            this.$store.dispatch('roomDataList/updateItem', obj).catch(err => {
               console.error(err)
             })
           } else {
             delete obj.id;
-            obj.popularity = 0;
-            this.$store.dispatch('dataList/addItem', obj).catch(err => {
+            this.$store.dispatch('roomDataList/addItem', obj).catch(err => {
               console.error(err)
             })
           }
@@ -192,8 +194,8 @@ export default {
         }
       })
     },
-    updateCurrQrCode (input) {
-
+    updateCurrQrCode () {
+      this.dataQrCode = apiURL + '/room/view/' + randomstring.generate({length: 30})
     }
   }
 }

@@ -84,6 +84,6 @@ export default {
   },
 
   refreshToken () {
-    return axios.post('/api/auth/refresh-token', {accessToken: localStorage.getItem('accessToKen')})
+    return axios.post('/api/token/refresh', {refresh_token: localStorage.getItem('RefreshToken')})
   }
 }

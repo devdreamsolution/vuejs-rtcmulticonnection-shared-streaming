@@ -1,9 +1,9 @@
-import axios from '@/axios.js'
+import axios, {removeLocalStorage} from '@/axios.js'
 
 export default {
   addItem ({ commit }, item) {
     return new Promise((resolve, reject) => {
-      axios.post('/api/data-list/products/', {item})
+      axios.post('/api/room/create', item)
         .then((response) => {
           commit('ADD_ITEM', Object.assign(item, {id: response.data.id}))
           resolve(response)
@@ -21,21 +21,11 @@ export default {
         .catch((error) => { reject(error) })
     })
   },
-  // fetchEventLabels({ commit }) {
-  //   return new Promise((resolve, reject) => {
-  //     axios.get("/api/apps/calendar/labels")
-  //       .then((response) => {
-  //         commit('SET_LABELS', response.data)
-  //         resolve(response)
-  //       })
-  //       .catch((error) => { reject(error) })
-  //   })
-  // },
   updateItem ({ commit }, item) {
     return new Promise((resolve, reject) => {
-      axios.post(`/api/data-list/products/${item.id}`, {item})
+      axios.post(`/api/room/${item.id}/edit`, item)
         .then((response) => {
-          commit('UPDATE_PRODUCT', response.data)
+          commit('UPDATE_ITEM', response.data.data)
           resolve(response)
         })
         .catch((error) => { reject(error) })
@@ -43,28 +33,11 @@ export default {
   },
   removeItem ({ commit }, itemId) {
     return new Promise((resolve, reject) => {
-      axios.delete(`/api/data-list/products/${itemId}`)
+      axios.delete(`/api/room/${itemId}/delete`)
         .then((response) => {
           commit('REMOVE_ITEM', itemId)
           resolve(response)
-        })
-        .catch((error) => { reject(error) })
+        }).catch((error) => { reject(error) })
     })
   }
-  // eventDragged({ commit }, payload) {
-  //   return new Promise((resolve, reject) => {
-  //     axios.post(`/api/apps/calendar/event/dragged/${payload.event.id}`, {payload: payload})
-  //       .then((response) => {
-
-  //         // Convert Date String to Date Object
-  //         let event = response.data
-  //         event.startDate = new Date(event.startDate)
-  //         event.endDate = new Date(event.endDate)
-
-  //         commit('UPDATE_EVENT', event)
-  //         resolve(response)
-  //       })
-  //       .catch((error) => { reject(error) })
-  //   })
-  // },
 }

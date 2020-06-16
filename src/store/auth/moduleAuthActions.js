@@ -28,20 +28,22 @@ export default {
               JSON.stringify(response.data.userdata)
             );
 
-            localStorage.setItem("AccessToken", response.data.token);
+            localStorage.setItem("AccessToken", response.data.token)
+            localStorage.setItem("RefreshToken", response.data.refresh_token)
+
 
             // Set bearer token in axios
-            commit("SET_BEARER", response.data.token);
+            commit("SET_BEARER", response.data.token)
 
-            router.push(router.currentRoute.query.to || "/");
+            router.push(router.currentRoute.query.to || "/")
 
             resolve(response);
           } else {
-            reject({ message: "Invalid credentials." });
+            reject({ message: "Invalid credentials." })
           }
         })
         .catch(error => {
-          reject({ message: error.response.data.message });
+          reject({ message: error.response.data.message })
         });
     });
   },
@@ -95,26 +97,35 @@ export default {
               "UserInfo",
               JSON.stringify(response.data.userdata)
             );
-            localStorage.setItem("AccessToken", response.data.token);
+            localStorage.setItem("AccessToken", response.data.token)
+            localStorage.setItem("RefreshToken", response.data.refresh_token)
 
             // Set bearer token in axios
-            commit("SET_BEARER", response.data.token);
+            commit("SET_BEARER", response.data.token)
 
             resolve(response);
           } else {
-            reject({ message: response.data["email"] });
+            reject({ message: response.data["email"] })
           }
         })
         .catch(error => {
-          reject(error);
+          reject(error)
         });
     });
   },
   fetchAccessToken() {
     return new Promise(resolve => {
       jwt.refreshToken().then(response => {
-        resolve(response);
-      });
+        localStorage.setItem(
+            "UserInfo",
+              JSON.stringify(response.data.userdata)
+            )
+        localStorage.setItem("AccessToken", response.data.token)
+        localStorage.setItem("RefreshToken", response.data.refresh_token)
+        resolve(response)
+      })
+      .catch(error => {
+      })
     });
   }
 };

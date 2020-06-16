@@ -6,6 +6,10 @@
       :data="sidebarData"
     />
 
+    <vs-popup :title="qrCodeModalTitle" :active.sync="popupActive">
+       <vx-qrcode :value="qrCodeModalValue" :size=250 class="vx-qrcode"/>
+    </vs-popup>
+
     <vs-table
       ref="table"
       multiple
@@ -13,22 +17,25 @@
       pagination
       :max-items="itemsPerPage"
       search
-      :data="products"
+      :data="rooms"
     >
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
           <div
             class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-danger border border-solid border-danger"
+            v-if="userRoles.includes('ROLE_GUIDE')"
+            @click="removeSelectedData"
           >
             <feather-icon icon="DeleteIcon" svgClasses="h-4 w-4" />
-            <span class="ml-2 text-base text-danger" @click="removeSeletedData">Delete</span>
+            <span class="ml-2 text-base text-danger">Delete</span>
           </div>
 
           <!-- ADD NEW -->
           <div
             class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary"
             @click="addNewData"
+            v-if="userRoles.includes('ROLE_GUIDE')"
           >
             <feather-icon icon="PlusIcon" svgClasses="h-4 w-4" />
             <span class="ml-2 text-base text-primary">Add Room</span>
@@ -42,7 +49,7 @@
           >
             <span
               class="mr-2"
-            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ products.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : products.length }} of {{ queriedItems }}</span>
+            >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ rooms.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : rooms.length }} of {{ queriedItems }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <vs-dropdown-menu>
@@ -65,16 +72,16 @@
       <template slot="thead">
         <vs-th>Qrcode</vs-th>
         <vs-th sort-key="name">Title</vs-th>
-        <vs-th sort-key="category">Description</vs-th>
-        <vs-th>Action</vs-th>
+        <vs-th sort-key="description">Description</vs-th>
+        <vs-th v-if="userRoles.includes('ROLE_GUIDE')">Action</vs-th>
       </template>
 
       <template slot-scope="{data}">
         <tbody>
           <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
             <vs-td class="img-container">
-              <a @click.stop="showRoom(tr)">
-                <vx-qrcode :value="tr.qr_url" :size=100 class="product-img"  @click.stop="editData(tr)"/>
+              <a @click.stop="showQrCode(tr)">
+                <vx-qrcode :value="apiURL + '/room/view/' + tr.qr_code" :size=100 class="product-img"  @click.stop="editData(tr)"/>
               </a>
             </vs-td>
 
@@ -86,7 +93,7 @@
               <p class="product-category">{{ tr.description }}</p>
             </vs-td>
 
-            <vs-td class="whitespace-no-wrap">
+            <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
               <feather-icon
                 icon="EditIcon"
                 svgClasses="w-5 h-5 hover:text-primary stroke-current"
@@ -109,7 +116,7 @@
 <script>
 import DataViewSidebar from './module/DataViewSidebar.vue'
 import moduleDataList from '@/store/room/moduleDataList.js'
-import router from '@/router'
+import {apiURL, userRoles} from '@/axios.js'
 
 export default {
   components: {
@@ -118,11 +125,16 @@ export default {
   data () {
     return {
       selected: [],
-      // products: [],
+      // rooms: [],
       itemsPerPage: 4,
       isMounted: false,
       addNewDataSidebar: false,
-      sidebarData: {}
+      sidebarData: {},
+      apiURL: apiURL,
+      popupActive: false,
+      userRoles: userRoles,
+      qrCodeModalTitle:'',
+      qrCodeModalValue:''
     }
   },
   computed: {
@@ -132,13 +144,13 @@ export default {
       }
       return 0;
     },
-    products () {
-      return this.$store.state.dataList.rooms
+    rooms () {
+      return this.$store.state.roomDataList.rooms
     },
     queriedItems () {
       return this.$refs.table
         ? this.$refs.table.queriedResults.length
-        : this.products.length;
+        : this.rooms.length;
     }
   },
   methods: {
@@ -147,29 +159,36 @@ export default {
       this.toggleDataSidebar(true)
     },
     deleteData (id) {
-      this.$store.dispatch("dataList/removeItem", id).catch(err => {
+      this.$store.dispatch("roomDataList/removeItem", id).catch(err => {
         console.error(err);
       });
     },
-    removeSeletedData ()
+    removeSelectedData ()
     {
       if (this.selected.length > 0) {
-        this.$swal({
-          title: "Are you sure?",
-          text: "You will not be able to recover this data!",
-          icon: "warning",
-          buttons: true,
-          dangerMode: true
-        })
-        .then((willDelete) => {
-          if (willDelete) {
-
-          }
+          this.$vs.dialog({
+          type: 'confirm',
+          color: 'danger',
+          title: 'Confirm Delete',
+          text: `You will not be able to recover this data!`,
+          accept: this.deleteRecords(this.selected),
+          acceptText: 'Delete'
         })
       }
     },
+    deleteRecords(data)
+    {
+      console.log(data)
+    },
     showRoom (data) {
-      router.push(`/room/${data.id}/view`)
+      this.$router.push(`/room/${data.id}/view`).catch(() => {})
+    },
+    showQrCode(data)
+    {
+      this.qrCodeModalTitle = data.name
+      this.qrCodeModalValue = apiURL + '/room/view/' + data.qr_code
+      this.popupActive = true
+
     },
     editData (data) {
       // this.sidebarData = JSON.parse(JSON.stringify(this.blankData))
@@ -182,10 +201,10 @@ export default {
   },
   created () {
     if (!moduleDataList.isRegistered) {
-      this.$store.registerModule('dataList', moduleDataList)
+      this.$store.registerModule('roomDataList', moduleDataList)
       moduleDataList.isRegistered = true
     }
-    this.$store.dispatch('dataList/fetchDataListItems')
+    this.$store.dispatch('roomDataList/fetchDataListItems')
   },
   mounted () {
     this.isMounted = true
@@ -194,6 +213,16 @@ export default {
 </script>
 
 <style lang="scss">
+.vs-popup
+{
+  width: 340px !important;
+  height: 335px !important;
+}
+.vx-qrcode
+{
+  margin-left: 30px;
+}
+
 #data-list-thumb-view {
   .vs-con-table {
     .product-name {

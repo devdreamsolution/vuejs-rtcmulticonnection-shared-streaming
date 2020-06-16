@@ -51,6 +51,7 @@
                     v-model="password"
                     class="w-full mt-6"
                     v-validate="'required'"
+                    @keyup.enter="submitForm"
                   />
                   <span class="text-danger text-sm" v-show="errors.has('password')">{{ errors.first('password') }}</span>
 

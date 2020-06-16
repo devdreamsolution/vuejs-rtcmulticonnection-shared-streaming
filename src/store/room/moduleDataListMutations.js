@@ -10,20 +10,17 @@
 
 export default {
   ADD_ITEM (state, item) {
-    state.products.unshift(item)
+    state.rooms.unshift(item)
   },
   SET_ROOMS (state, rooms) {
     state.rooms = rooms
   },
-  // SET_LABELS(state, labels) {
-  //   state.eventLabels = labels
-  // },
-  UPDATE_PRODUCT (state, product) {
-    const productIndex = state.products.findIndex((p) => p.id === product.id)
-    Object.assign(state.products[productIndex], product)
+  UPDATE_ITEM (state, item) {
+    const itemIndex = state.rooms.findIndex((p) => p.id === item.id)
+    Object.assign(state.rooms[itemIndex], item)
   },
   REMOVE_ITEM (state, itemId) {
-    const ItemIndex = state.products.findIndex((p) => p.id === itemId)
-    state.products.splice(ItemIndex, 1)
+    const ItemIndex = state.rooms.findIndex((p) => p.id === itemId)
+    state.rooms.splice(ItemIndex, 1)
   }
 }
