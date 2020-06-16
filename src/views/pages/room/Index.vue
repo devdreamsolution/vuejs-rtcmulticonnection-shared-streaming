@@ -133,8 +133,8 @@ export default {
       apiURL: apiURL,
       popupActive: false,
       userRoles: userRoles,
-      qrCodeModalTitle:'',
-      qrCodeModalValue:''
+      qrCodeModalTitle: '',
+      qrCodeModalValue: ''
     }
   },
   computed: {

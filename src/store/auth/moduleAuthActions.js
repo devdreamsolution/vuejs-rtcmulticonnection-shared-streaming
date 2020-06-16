@@ -7,9 +7,9 @@
   Author URL: http://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
 
-import jwt from "../../http/requests/auth/jwt/index.js";
+import jwt from '../../http/requests/auth/jwt/index.js'
 
-import router from "@/router";
+import router from '@/router'
 
 export default {
   // JWT
@@ -24,28 +24,28 @@ export default {
             // Set token
 
             localStorage.setItem(
-              "UserInfo",
+              'UserInfo',
               JSON.stringify(response.data.userdata)
-            );
+            )
 
-            localStorage.setItem("AccessToken", response.data.token)
-            localStorage.setItem("RefreshToken", response.data.refresh_token)
+            localStorage.setItem('AccessToken', response.data.token)
+            localStorage.setItem('RefreshToken', response.data.refresh_token)
 
 
             // Set bearer token in axios
-            commit("SET_BEARER", response.data.token)
+            commit('SET_BEARER', response.data.token)
 
-            router.push(router.currentRoute.query.to || "/")
+            router.push(router.currentRoute.query.to || '/')
 
-            resolve(response);
+            resolve(response)
           } else {
-            reject({ message: "Invalid credentials." })
+            reject({message: 'Invalid credentials.'})
           }
         })
         .catch(error => {
-          reject({ message: error.response.data.message })
-        });
-    });
+          reject({message: error.response.data.message})
+        })
+    })
   },
   registerUserJWT({ commit }, payload) {
     const {
@@ -63,12 +63,12 @@ export default {
       age,
       vat,
       picture
-    } = payload.userDetails;
+    } = payload.userDetails
 
     return new Promise((resolve, reject) => {
       // Check confirm password
       if (password !== confirmPassword) {
-        reject({ message: "Password doesn't match. Please try again." });
+        reject({message: "Password doesn't match. Please try again."})
       }
 
       jwt
@@ -88,44 +88,44 @@ export default {
           picture
         )
         .then(response => {
-          if (response.data == "Successfully") {
+          if (response.data == 'Successfully') {
             // Redirect User
-            router.push(router.currentRoute.query.to || "/");
+            router.push(router.currentRoute.query.to || '/')
 
             // Update data in localStorage
             localStorage.setItem(
-              "UserInfo",
+              'UserInfo',
               JSON.stringify(response.data.userdata)
-            );
-            localStorage.setItem("AccessToken", response.data.token)
-            localStorage.setItem("RefreshToken", response.data.refresh_token)
+            )
+            localStorage.setItem('AccessToken', response.data.token)
+            localStorage.setItem('RefreshToken', response.data.refresh_token)
 
             // Set bearer token in axios
-            commit("SET_BEARER", response.data.token)
+            commit('SET_BEARER', response.data.token)
 
-            resolve(response);
+            resolve(response)
           } else {
-            reject({ message: response.data["email"] })
+            reject({ message: response.data['email'] })
           }
         })
         .catch(error => {
           reject(error)
-        });
-    });
+        })
+    })
   },
   fetchAccessToken() {
     return new Promise(resolve => {
       jwt.refreshToken().then(response => {
         localStorage.setItem(
-            "UserInfo",
+            'UserInfo',
               JSON.stringify(response.data.userdata)
             )
-        localStorage.setItem("AccessToken", response.data.token)
-        localStorage.setItem("RefreshToken", response.data.refresh_token)
+        localStorage.setItem('AccessToken', response.data.token)
+        localStorage.setItem('RefreshToken', response.data.refresh_token)
         resolve(response)
       })
       .catch(error => {
       })
-    });
+    })
   }
 };
