@@ -6,4 +6,8 @@ export default {
   SET_AUDIOS (state, audios) {
     state.audios = audios
   },
+  REMOVE_AUDIO (state, audioId) {
+    const ItemIndex = state.audios.findIndex((p) => p.id === audioId)
+    state.audios.splice(ItemIndex, 1)
+  },
 }

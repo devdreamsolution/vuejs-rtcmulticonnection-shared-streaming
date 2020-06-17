@@ -24,7 +24,7 @@
         <!-- Avatar -->
         <div class="vx-row mt-6">
           <!-- Avatar Col -->
-          <div class="vx-col" id="avatar-col">
+          <div class="vx-col" id="owner-avatar">
             <div class="img-container mb-4">
               <img :src="room_data.owner.picture" alt="Room owner avatar" class="rounded w-full" />
             </div>
@@ -62,7 +62,7 @@
       </vx-card>
     </div>
 
-    <div v-if="room_data">
+    <div id="audio-list" v-if="room_data">
       <vx-card title="Audio list" class="mb-base">
         <vs-table
           ref="table"
@@ -71,7 +71,7 @@
           pagination
           :max-items="itemsPerPage"
           search
-          :data="audiosByRoomId"
+          :data="audiosByQrCode"
         >
           <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
             <div class="flex flex-wrap-reverse items-center">
@@ -103,7 +103,7 @@
               >
                 <span
                   class="mr-2"
-                >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ audiosByRoomId.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : audiosByRoomId.length }} of {{ queriedItems }}</span>
+                >{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ audiosByQrCode.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : audiosByQrCode.length }} of {{ queriedItems }}</span>
                 <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
               </div>
               <vs-dropdown-menu>
@@ -133,7 +133,7 @@
             <tbody>
               <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
                 <vs-td>
-                  <p class="product-name font-medium truncate">{{ tr.recorder.name }}</p>
+                  <img :src="tr.recorder.picture" height="80px" alt="Recorder avatar" />
                 </vs-td>
 
                 <vs-td>
@@ -174,6 +174,7 @@ export default {
       error_message: '',
       itemsPerPage: 4,
       selected: [],
+      isMounted: false,
     }
   },
   methods: {
@@ -191,7 +192,7 @@ export default {
       }
     },
     deleteData (id) {
-      this.$store.dispatch("moduleRoom/removeRoom", id).catch(err => {
+      this.$store.dispatch("moduleRoom/removeAudio", id).catch(err => {
         console.error(err);
       });
     },
@@ -207,57 +208,54 @@ export default {
       }
       return 0;
     },
-    audiosByRoomId () {
+    audiosByQrCode () {
       return this.$store.state.moduleAudio.audios
     },
     queriedItems () {
       return this.$refs.table
         ? this.$refs.table.queriedResults.length
-        : this.audiosByRoomId.length;
+        : this.audiosByQrCode.length;
     }
   },
   created () {
-    if (!moduleRoom.isRegistered) {
-      this.$store.registerModule('moduleRoom', moduleRoom)
-      moduleRoom.isRegistered = true
-    }
-
     const qr_code = this.$route.params.qr_code
-    this.$store.dispatch('moduleRoom/fetchRoomByQrCode', qr_code)
-      .then(res => {
-        if (res.data.success) {
-          this.room_data = res.data.data
+    if (!moduleAudio.isRegistered) {
+      this.$store.registerModule('moduleAudio', moduleAudio)
+      moduleAudio.isRegistered = true
+    }
+    this.$store.dispatch('moduleAudio/fetchAudiosByQrCode', qr_code)
+      .then (response => {
+        if (response.data.success) {
+          this.room_data = response.data.data[0].room
           this.room_not_found = false
-
-          // Get audios by room
-          if (!moduleAudio.isRegistered) {
-            this.$store.registerModule('moduleAudio', moduleAudio)
-            moduleAudio.isRegistered = true
-          }
-          const room_id = this.room_data.id
-          this.$store.dispatch('moduleAudio/fetchAudiosByRoomId', room_id)
         } else {
+          this.room_not_found = true;
           this.room_data = null
-          this.error_message = res.data.message
-          this.room_not_found = true
+          this.error_message = response.data.message
         }
       })
-      .catch(err => {
-        if (err.response.status === 404) {
-          this.user_not_found = true
+      .catch (error => {
+        if (error.response.status == 404) {
+          this.room_not_found = true
           this.room_data = null
-          this.error_message = `Room record with QR code: ${route.params.qr_code} not found.`
+          this.error_message = `Room record with QR code: ${route.params.qr_code} not found`
           return
         }
-      }
-    )
+      })
+  },
+  mounted () {
+    this.isMounted = true
   }
 }
 </script>
 
 <style lang="scss">
 
-#avatar-col {
+#owner-avatar {
+  width: 10rem;
+}
+
+#recorder-avatar {
   width: 10rem;
 }
 
@@ -268,6 +266,84 @@ export default {
       min-width: 140px;
       padding-bottom: .8rem;
       word-break: break-all;
+    }
+  }
+}
+#audio-list {
+  .vs-con-table {
+    .vs-table--header {
+      display: flex;
+      flex-wrap: wrap-reverse;
+      margin-left: 1.5rem;
+      margin-right: 1.5rem;
+      > span {
+        display: flex;
+        flex-grow: 1;
+      }
+
+      .vs-table--search {
+        padding-top: 0;
+
+        .vs-table--search-input {
+          padding: 0.9rem 2.5rem;
+          font-size: 1rem;
+
+          & + i {
+            left: 1rem;
+          }
+
+          &:focus + i {
+            left: 1rem;
+          }
+        }
+      }
+    }
+
+    .vs-table {
+      border-collapse: separate;
+      border-spacing: 0 1.3rem;
+      padding: 0 1rem;
+
+      tr {
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
+        td {
+          padding: 10px;
+          &:first-child {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+          }
+          &:last-child {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+          }
+        }
+        td.td-check {
+          padding: 20px !important;
+        }
+      }
+    }
+
+    .vs-table--thead {
+      th {
+        padding-top: 0;
+        padding-bottom: 0;
+
+        .vs-table-text {
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+      }
+      th.td-check {
+        padding: 0 15px !important;
+      }
+      tr {
+        background: none;
+        box-shadow: none;
+      }
+    }
+
+    .vs-table--pagination {
+      justify-content: center;
     }
   }
 }
