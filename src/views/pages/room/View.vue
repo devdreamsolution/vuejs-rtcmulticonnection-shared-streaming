@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <vs-alert color="danger" title="User Not Found" :active.sync="user_not_found">
-      <span>Room record with QR code: {{ $route.params.qr_code }} not found. </span>
+  <div id="page-room-view">
+    <vs-alert color="danger" title="Room Not Found" :active.sync="room_not_found">
+      <span>{{ error_message }}</span>
       <span>
         <span>Check </span><router-link :to="{name:'room'}" class="text-inherit underline">All Rooms</router-link>
       </span>
     </vs-alert>
-    <div id="room_data" v-if="room_data">
+    <div id="room-data" v-if="room_data">
       <vx-card title="Room data" class="mb-base">
         <!-- Room info -->
         <div class="vx-col flex-1">
@@ -26,7 +26,7 @@
           <!-- Avatar Col -->
           <div class="vx-col" id="avatar-col">
             <div class="img-container mb-4">
-              <img :src="room_data.owner.picture" class="rounded w-full" />
+              <img :src="room_data.owner.picture" alt="Room owner avatar" class="rounded w-full" />
             </div>
           </div>
 
@@ -85,7 +85,9 @@ import moduleDataList from '@/store/room/moduleDataList.js'
 export default {
   data () {
     return {
-      room_data: null
+      room_data: null,
+      room_not_found: false,
+      error_message: ''
     }
   },
   methods: {
@@ -97,23 +99,71 @@ export default {
       moduleDataList.isRegistered = true
     }
 
-    this.$store.dispatch('roomDataList/fetchDataListItems')
     const qr_code = this.$route.params.qr_code
     this.$store.dispatch('roomDataList/fetchDataByQrCode', qr_code)
-      .then(res => { this.room_data = res.data })
+      .then(res => {
+        if (res.data.success) {
+          this.room_data = res.data.data
+          this.room_not_found = false
+        } else {
+          this.room_data = null
+          this.error_message = res.data.message
+          this.room_not_found = true
+        }
+      })
       .catch(err => {
         if (err.response.status === 404) {
           this.user_not_found = true
+          this.room_data = null
+          this.error_message = `Room record with QR code: ${route.params.qr_code} not found.`
           return
         }
-        console.error(err)
       })
   }
 }
 </script>
 
-<script lang="scss">
+<style lang="scss">
+
 #avatar-col {
   width: 10rem;
 }
-</script>
+
+#page-room-view {
+  table {
+    td {
+      vertical-align: top;
+      min-width: 140px;
+      padding-bottom: .8rem;
+      word-break: break-all;
+    }
+
+    &:not(.permissions-table) {
+      td {
+        @media screen and (max-width:370px) {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width:1201px) and (max-width:1211px),
+only screen and (min-width:636px) and (max-width:991px) {
+  #account-info-col-1 {
+    width: calc(100% - 12rem) !important;
+  }
+
+  // #account-manage-buttons {
+  //   width: 12rem !important;
+  //   flex-direction: column;
+
+  //   > button {
+  //     margin-right: 0 !important;
+  //     margin-bottom: 1rem;
+  //   }
+  // }
+
+}
+
+</style>
