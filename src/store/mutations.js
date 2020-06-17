@@ -98,8 +98,8 @@ const mutations = {
   UPDATE_USER_INFO(state, payload) {
 
     // Get Data localStorage
-    let userInfo = JSON.parse(localStorage.getItem("userInfo")) || state.AppActiveUser
-
+    let userInfo = JSON.parse(localStorage.getItem("UserInfo")) || state.AppActiveUser
+    console.log(userInfo)
     for (const property of Object.keys(payload)) {
 
       if (payload[property] != null) {
@@ -113,7 +113,7 @@ const mutations = {
 
     }
     // Store data in localStorage
-    localStorage.setItem("userInfo", JSON.stringify(userInfo))
+    localStorage.setItem("UserInfo", JSON.stringify(userInfo))
   },
 }
 

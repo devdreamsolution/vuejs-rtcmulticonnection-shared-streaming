@@ -132,12 +132,15 @@ export default {
       sidebarData: {},
       apiURL: apiURL,
       popupActive: false,
-      userRoles: localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : [],
       qrCodeModalTitle: '',
       qrCodeModalValue: ''
     }
   },
   computed: {
+    userRoles()
+    {
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : []
+    },
     currentPage () {
       if (this.isMounted) {
         return this.$refs.table.currentx
