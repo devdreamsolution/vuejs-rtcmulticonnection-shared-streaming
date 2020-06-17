@@ -1,17 +1,17 @@
 import axios, {removeLocalStorage} from '@/axios.js'
 
 export default {
-  addItem ({ commit }, item) {
+  addRoom ({ commit }, room) {
     return new Promise((resolve, reject) => {
-      axios.post('/api/room/create', item)
+      axios.post('/api/room/create', room)
         .then((response) => {
-          commit('ADD_ITEM', Object.assign(item, {id: response.data.id}))
+          commit('ADD_ROOM', Object.assign(room, {id: response.data.id}))
           resolve(response)
         })
         .catch((error) => { reject(error) })
     })
   },
-  fetchDataListItems ({ commit }) {
+  fetchRooms ({ commit }) {
     return new Promise((resolve, reject) => {
       axios.get('/api/room/list')
         .then((response) => {
@@ -21,30 +21,29 @@ export default {
         .catch((error) => { reject(error) })
     })
   },
-  updateItem ({ commit }, item) {
+  updateRoom ({ commit }, room) {
     return new Promise((resolve, reject) => {
-      axios.post(`/api/room/${item.id}/edit`, item)
+      axios.post(`/api/room/${room.id}/edit`, room)
         .then((response) => {
-          commit('UPDATE_ITEM', response.data.data)
+          commit('UPDATE_ROOM', response.data.data)
           resolve(response)
         })
         .catch((error) => { reject(error) })
     })
   },
-  removeItem ({ commit }, itemId) {
+  removeRoom ({ commit }, roomId) {
     return new Promise((resolve, reject) => {
-      axios.delete(`/api/room/${itemId}/delete`)
+      axios.delete(`/api/room/${roomId}/delete`)
         .then((response) => {
-          commit('REMOVE_ITEM', itemId)
+          commit('REMOVE_ROOM', roomId)
           resolve(response)
         }).catch((error) => { reject(error) })
     })
   },
-  fetchDataByQrCode ({ commit }, qr_code) {
+  fetchRoomByQrCode ({ commit }, qr_code) {
     return new Promise((resolve, reject) => {
       axios.get(`/api/room/view/${qr_code}`)
       .then((response) => {
-        commit('VIEW_ROOM', response.data)
         resolve(response)
       })
       .catch((error) => { reject(error) })

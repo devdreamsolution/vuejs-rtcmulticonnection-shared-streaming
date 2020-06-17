@@ -1,25 +1,9 @@
-/*=========================================================================================
-  File Name: moduleAudioMutations.js
-  Description: Audio Module Mutations
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-  Author: Xiao
-==========================================================================================*/
-
 
 export default {
-  ADD_ITEM (state, item) {
-    state.products.unshift(item)
+  ADD_AUDIO (state, audio) {
+    state.audios.unshift(audio)
   },
-  SET_PRODUCTS (state, products) {
-    state.products = products
+  SET_AUDIOS (state, audios) {
+    state.audios = audios
   },
-  UPDATE_PRODUCT (state, product) {
-    const productIndex = state.products.findIndex((p) => p.id === product.id)
-    Object.assign(state.products[productIndex], product)
-  },
-  REMOVE_ITEM (state, itemId) {
-    const ItemIndex = state.products.findIndex((p) => p.id === itemId)
-    state.products.splice(ItemIndex, 1)
-  }
 }

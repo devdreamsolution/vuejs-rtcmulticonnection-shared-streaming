@@ -172,12 +172,12 @@ export default {
           }
 
           if (this.dataId !== null && this.dataId >= 0) {
-            this.$store.dispatch('roomDataList/updateItem', obj).catch(err => {
+            this.$store.dispatch('moduleRoom/updateRoom', obj).catch(err => {
               console.error(err)
             })
           } else {
             delete obj.id;
-            this.$store.dispatch('roomDataList/addItem', obj).catch(err => {
+            this.$store.dispatch('moduleRoom/addRoom', obj).catch(err => {
               console.error(err)
             })
           }

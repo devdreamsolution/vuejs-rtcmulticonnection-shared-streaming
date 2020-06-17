@@ -115,7 +115,7 @@
 
 <script>
 import DataViewSidebar from './module/DataViewSidebar.vue'
-import moduleDataList from '@/store/room/moduleDataList.js'
+import moduleRoom from '@/store/room/moduleRoom.js'
 import {apiURL} from '@/axios.js'
 
 export default {
@@ -148,7 +148,7 @@ export default {
       return 0;
     },
     rooms () {
-      return this.$store.state.roomDataList.rooms
+      return this.$store.state.moduleRoom.rooms
     },
     queriedItems () {
       return this.$refs.table
@@ -162,7 +162,7 @@ export default {
       this.toggleDataSidebar(true)
     },
     deleteData (id) {
-      this.$store.dispatch("roomDataList/removeItem", id).catch(err => {
+      this.$store.dispatch("moduleRoom/removeRoom", id).catch(err => {
         console.error(err);
       });
     },
@@ -200,11 +200,11 @@ export default {
     }
   },
   created () {
-    if (!moduleDataList.isRegistered) {
-      this.$store.registerModule('roomDataList', moduleDataList)
-      moduleDataList.isRegistered = true
+    if (!moduleRoom.isRegistered) {
+      this.$store.registerModule('moduleRoom', moduleRoom)
+      moduleRoom.isRegistered = true
     }
-    this.$store.dispatch('roomDataList/fetchDataListItems')
+    this.$store.dispatch('moduleRoom/fetchRooms')
   },
   mounted () {
     this.isMounted = true
