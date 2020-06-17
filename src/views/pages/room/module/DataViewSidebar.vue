@@ -32,20 +32,16 @@
       :key="$vs.rtl"
     >
       <div class="p-6">
-        <!-- Product Image -->
         <template v-if="dataQrCode">
-          <!-- Image Container -->
           <div class="img-container w-64 mx-auto flex items-center justify-center">
             <vx-qrcode :value="dataQrCode" :size="220" class="responsive" />
           </div>
 
-          <!-- Image upload Buttons -->
           <div class="w-64 mx-auto flex items-center justify-center mt-5">
             <vs-button class="mr-4" type="flat" @click="updateCurrQrCode">Update QrCode</vs-button>
           </div>
         </template>
 
-        <!-- NAME -->
         <vs-input
           label="Title"
           v-model="dataTitle"
@@ -58,7 +54,6 @@
           v-show="errors.has('item-title')"
         >{{ errors.first('item-title') }}</span>
 
-        <!-- PRICE -->
         <vs-textarea
           label="Description"
           v-model="dataDescription"
@@ -71,9 +66,6 @@
           class="text-danger text-sm"
           v-show="errors.has('item-description')"
         >{{ errors.first('item-description') }}</span>
-
-        <!-- Upload -->
-        <!-- <vs-upload text="Upload Image" class="img-upload" ref="fileUpload" /> -->
 
         <div class="upload-img mt-5" v-if="!dataQrCode">
           <vs-button @click="updateCurrQrCode">Generate QrCode</vs-button>

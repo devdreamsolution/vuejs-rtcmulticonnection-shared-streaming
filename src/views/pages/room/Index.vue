@@ -180,9 +180,6 @@ export default {
     {
       console.log(data)
     },
-    showRoom (data) {
-      this.$router.push(`/room/${data.id}/view`).catch(() => {})
-    },
     showQrCode(data)
     {
       this.qrCodeModalTitle = data.name

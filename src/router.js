@@ -50,7 +50,7 @@ const router = new Router({
 
         // Room view, audio list
         {
-          path: '/room/:id/view',
+          path: '/room/view/:qr_code',
           name: 'room_view',
           component: () => import('./views/pages/room/View.vue'),
           meta: {

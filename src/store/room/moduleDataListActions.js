@@ -39,5 +39,15 @@ export default {
           resolve(response)
         }).catch((error) => { reject(error) })
     })
+  },
+  fetchDataByQrCode ({ commit }, qr_code) {
+    return new Promise((resolve, reject) => {
+      axios.get(`/api/room/view/${qr_code}`)
+      .then((response) => {
+        commit('VIEW_ROOM', response.data)
+        resolve(response)
+      })
+      .catch((error) => { reject(error) })
+    })
   }
 }

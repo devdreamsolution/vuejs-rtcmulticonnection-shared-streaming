@@ -1,17 +1,23 @@
 <template>
   <div>
-    <div id="owner-data">
+    <vs-alert color="danger" title="User Not Found" :active.sync="user_not_found">
+      <span>Room record with QR code: {{ $route.params.qr_code }} not found. </span>
+      <span>
+        <span>Check </span><router-link :to="{name:'room'}" class="text-inherit underline">All Rooms</router-link>
+      </span>
+    </vs-alert>
+    <div id="room_data" v-if="room_data">
       <vx-card title="Room data" class="mb-base">
         <!-- Room info -->
         <div class="vx-col flex-1">
           <table>
             <tr>
               <td class="font-semibold">Room name: </td>
-              <td> testRoom</td>
+              <td>{{ room_data.name }}</td>
             </tr>
             <tr>
               <td class="font-semibold">Room description: </td>
-              <td> This is test room description.</td>
+              <td>{{ room_data.description }}</td>
             </tr>
           </table>
         </div>
@@ -20,7 +26,7 @@
           <!-- Avatar Col -->
           <div class="vx-col" id="avatar-col">
             <div class="img-container mb-4">
-              <img src="@/assets/images/portrait/small/avatar-s-11.jpg" class="rounded w-full" />
+              <img :src="room_data.owner.picture" class="rounded w-full" />
             </div>
           </div>
 
@@ -29,11 +35,11 @@
             <table>
               <tr>
                 <td class="font-semibold">Name: </td>
-                <td> Angelo Sashington</td>
+                <td>{{ room_data.owner.name }}</td>
               </tr>
               <tr>
                 <td class="font-semibold">Email: </td>
-                <td>angelo@sashington.com</td>
+                <td>{{ room_data.owner.email }}</td>
               </tr>
             </table>
           </div>
@@ -44,11 +50,11 @@
             <table>
               <tr>
                 <td class="font-semibold">Address: </td>
-                <td> HongKong</td>
+                <td>{{ room_data.owner.address }}</td>
               </tr>
               <tr>
                 <td class="font-semibold">VAT:</td>
-                <td> 1.223</td>
+                <td>{{ room_data.owner.vat }}</td>
               </tr>
             </table>
           </div>
@@ -73,16 +79,41 @@
 </template>
 
 <script>
+import moduleDataList from '@/store/room/moduleDataList.js'
 // import moduleDataList from '@/store/audio/moduleAudio.js'
 
 export default {
   data () {
     return {
-      owner_data: null
+      room_data: null
     }
   },
-  computed: {
-    // getRoom
+  methods: {
+
+  },
+  created () {
+    if (!moduleDataList.isRegistered) {
+      this.$store.registerModule('roomDataList', moduleDataList)
+      moduleDataList.isRegistered = true
+    }
+
+    this.$store.dispatch('roomDataList/fetchDataListItems')
+    const qr_code = this.$route.params.qr_code
+    this.$store.dispatch('roomDataList/fetchDataByQrCode', qr_code)
+      .then(res => { this.room_data = res.data })
+      .catch(err => {
+        if (err.response.status === 404) {
+          this.user_not_found = true
+          return
+        }
+        console.error(err)
+      })
   }
+}
+</script>
+
+<script lang="scss">
+#avatar-col {
+  width: 10rem;
 }
 </script>
