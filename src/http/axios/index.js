@@ -22,8 +22,13 @@ axios.interceptors.response.use((response) => {
 }, function (error) {
     const originalRequest = error.config
     if (error.response.status === 401 && originalRequest.url === '/api/token/refresh') {
-        router.push('/auth/login')
-       return Promise.reject(error)
+
+      localStorage.removeItem('UserInfo')
+      localStorage.removeItem('AccessToken')
+      localStorage.removeItem("RefreshToken")
+      // This is just for demo Purpose. If user clicks on logout -> redirect
+      router.push('/auth/login')
+      return Promise.reject(error)
     }
 
     console.log(originalRequest.url);

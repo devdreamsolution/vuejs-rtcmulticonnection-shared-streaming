@@ -116,7 +116,7 @@
 <script>
 import DataViewSidebar from './module/DataViewSidebar.vue'
 import moduleDataList from '@/store/room/moduleDataList.js'
-import {apiURL, userRoles} from '@/axios.js'
+import {apiURL} from '@/axios.js'
 
 export default {
   components: {
@@ -132,7 +132,7 @@ export default {
       sidebarData: {},
       apiURL: apiURL,
       popupActive: false,
-      userRoles: userRoles,
+      userRoles: localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : [],
       qrCodeModalTitle: '',
       qrCodeModalValue: ''
     }
