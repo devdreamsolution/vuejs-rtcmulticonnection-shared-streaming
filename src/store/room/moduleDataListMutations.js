@@ -13,5 +13,8 @@ export default {
   REMOVE_ITEM (state, itemId) {
     const ItemIndex = state.rooms.findIndex((p) => p.id === itemId)
     state.rooms.splice(ItemIndex, 1)
+  },
+  VIEW_ROOM (state, room) {
+    state.room = room
   }
 }
