@@ -62,7 +62,7 @@
       </vx-card>
     </div>
 
-    <div id="audio-list" v-if="room_data">
+    <div id="audio-list">
       <vx-card title="Audio list" class="mb-base">
         <vs-table
           ref="table"
@@ -137,7 +137,7 @@
                 </vs-td>
 
                 <vs-td>
-                  <p class="product-category">{{ tr.audio }}</p>
+                  <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {id: tr.id }})">{{ tr.audio }}</p>
                 </vs-td>
 
                 <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
@@ -218,6 +218,41 @@ export default {
     }
   },
   created () {
+    // const qr_code = this.$route.params.qr_code
+    // if (!moduleRoom.isRegistered) {
+    //   this.$store.registerModule('moduleRoom', moduleRoom)
+    //   moduleRoom.isRegistered = true
+    // }
+    // this.$store.dispatch('moduleRoom/fetchRoomByQrCode', qr_code)
+    //   .then (response => {
+    //     if (response.data.success) {
+    //       this.room_not_found = false
+    //       this.room_data = response.data.data
+
+    //       const room_id = this.room_data.id
+    //       if (!moduleAudio.isRegistered) {
+    //         this.$store.registerModule('moduleAudio', moduleAudio)
+    //         moduleAudio.isRegistered = true
+    //       }
+    //       this.$store.dispatch('moduleAudio/fetchAudiosByRoomId', room_id)
+    //       .then (response => {
+
+    //       })
+    //       .catch (error => {
+
+    //       })
+
+    //     } else {
+    //       this.room_not_found = true;
+    //       this.error_message = response.data.message
+    //     }
+    //   })
+    //   .catch (error => {
+    //     if (error.response.status == 404) {
+    //       this.room_not_found = true
+    //       this.error_message = `Room record with QR code: ${route.params.qr_code} not found`
+    //     }
+    //   })
     const qr_code = this.$route.params.qr_code
     if (!moduleAudio.isRegistered) {
       this.$store.registerModule('moduleAudio', moduleAudio)
@@ -226,21 +261,17 @@ export default {
     this.$store.dispatch('moduleAudio/fetchAudiosByQrCode', qr_code)
       .then (response => {
         if (response.data.success) {
-          this.room_data = response.data.data[0].room
           this.room_not_found = false
+          this.room_data = response.data.data.current_room
         } else {
           this.room_not_found = true;
-          this.room_data = null
           this.error_message = response.data.message
         }
       })
       .catch (error => {
-        if (error.response.status == 404) {
-          this.room_not_found = true
-          this.room_data = null
-          this.error_message = `Room record with QR code: ${route.params.qr_code} not found`
-          return
-        }
+        this.room_not_found = true
+        this.error_message = `Room record with QR code: ${qr_code} not found`
+        return
       })
   },
   mounted () {
@@ -307,6 +338,7 @@ export default {
       tr {
         box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
         td {
+          vertical-align: middle;
           padding: 10px;
           &:first-child {
             border-top-left-radius: 0.5rem;

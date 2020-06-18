@@ -55,6 +55,23 @@ const router = new Router({
             rule: 'editor',
             authRequired: 'require'
           }
+        },
+
+        // Audio view
+        {
+          path: '/audio/:id/view',
+          name: 'audio_view',
+          component: () => import('./views/pages/audio/View.vue'),
+          meta: {
+            breadcrumb: [
+              { title: 'Home', url: '/' },
+              { title: 'Room', url: '/room' },
+              { title: 'Audio view', active: true}
+            ],
+            pageTitle: 'Audio View',
+            rule: 'editor',
+            authRequired: 'require'
+          }
         }
       ]
     },
