@@ -1,16 +1,17 @@
 <template>
   <div id="audio-create">
     <audio-recorder
-    upload-url="http://localhost:8000/api/audio/7/create"
-    :attempts="1"
-    :time="2"
-    :before-recording="callback"
-    :pause-recording="callback"
-    :after-recording="afterRecordingCallback"
-    :select-record="callback"
-    :before-upload="beforeUploadCallback"
-    :successful-upload="successUploadCallback"
-    :failed-upload="callback"/>
+      upload-url="http://localhost:8000/audio/7/create"
+      :attempts="1"
+      :time="2"
+      :before-recording="callback"
+      :pause-recording="callback"
+      :after-recording="callback"
+      :select-record="callback"
+      :before-upload="callback"
+      :successful-upload="callback"
+      :failed-upload="callback"
+    />
   </div>
 </template>
 
@@ -23,30 +24,13 @@ Vue.use(AudioRecorder)
 export default {
   data () {
     return {
-      isUploaded: false,
-      uploadedRecordArray: []
+      uploadUrl: 'sdfsdf',
     }
   },
   methods: {
-    afterRecordingCallback (data) {
-      this.isUploaded = false
-    },
     callback (data) {
       // console.log('success')
     },
-    beforeUploadCallback (data) {
-      console.log(this.isUploaded)
-      return false
-      if (this.isUploaded) {
-        return
-      }
-    },
-    successUploadCallback (data) {
-      this.isUploaded = true
-    },
-    upload () {
-      console.log('Re-define')
-    }
   }
 }
 </script>
@@ -55,6 +39,6 @@ export default {
 #audio-create {
   display: flex;
   align-items: center;
-  justify-content: center;;
+  justify-content: center;
 }
 </style>

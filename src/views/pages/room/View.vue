@@ -137,15 +137,16 @@
                 </vs-td>
 
                 <vs-td>
-                  <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {room_id: tr.room.id ,id: tr.id} })">{{ tr.audio }}</p>
+                  <!-- <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {room_id: tr.room.id ,id: tr.id} })">{{ tr.audio }}</p> -->
+                  <p class="product-category" @click.stop=""><audio-player :src="tr.audio"/></p>
                 </vs-td>
 
                 <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
-                  <feather-icon
+                  <!-- <feather-icon
                     icon="EditIcon"
                     svgClasses="w-5 h-5 hover:text-primary stroke-current"
                     @click.stop="$router.push({ name: 'audio_edit', params: {room_id: tr.room.id, id: tr.id} })"
-                  />
+                  /> -->
                   <feather-icon
                     icon="TrashIcon"
                     svgClasses="w-5 h-5 hover:text-danger stroke-current"
@@ -165,6 +166,11 @@
 <script>
 import moduleRoom from '@/store/room/moduleRoom.js'
 import moduleAudio from '@/store/audio/moduleAudio.js'
+
+import AudioRecorder from 'vue-audio-recorder'
+import Vue from 'vue'
+
+Vue.use(AudioRecorder)
 
 export default {
   data () {
@@ -192,7 +198,7 @@ export default {
       }
     },
     deleteData (id) {
-      this.$store.dispatch("moduleRoom/removeAudio", id).catch(err => {
+      this.$store.dispatch("moduleAudio/removeAudio", id).catch(err => {
         console.error(err);
       });
     },
