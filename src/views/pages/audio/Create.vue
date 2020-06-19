@@ -1,7 +1,7 @@
 <template>
   <div id="audio-create">
     <audio-recorder
-      upload-url="http://localhost:8000/audio/7/create"
+      :upload-url="uploadUrl"
       :attempts="1"
       :time="2"
       :before-recording="callback"
@@ -24,7 +24,7 @@ Vue.use(AudioRecorder)
 export default {
   data () {
     return {
-      uploadUrl: 'sdfsdf',
+      uploadUrl: "/api/audio/" + this.$route.params.room_id + "/create",
     }
   },
   methods: {
