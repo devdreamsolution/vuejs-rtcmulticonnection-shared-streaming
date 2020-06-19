@@ -88,11 +88,11 @@
               <!-- ADD NEW -->
               <div
                 class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary"
-                @click="$router.push({ name: 'home' })"
+                @click="$router.push({ name: 'audio_create', params: {room_id: room_data.id} })"
                 v-if="userRoles.includes('ROLE_GUIDE')"
               >
                 <feather-icon icon="PlusIcon" svgClasses="h-4 w-4" />
-                <span class="ml-2 text-base text-primary">Add Room</span>
+                <span class="ml-2 text-base text-primary">Add Audio</span>
               </div>
             </div>
 
@@ -137,14 +137,14 @@
                 </vs-td>
 
                 <vs-td>
-                  <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {id: tr.id }})">{{ tr.audio }}</p>
+                  <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {room_id: tr.room.id ,id: tr.id} })">{{ tr.audio }}</p>
                 </vs-td>
 
                 <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
                   <feather-icon
                     icon="EditIcon"
                     svgClasses="w-5 h-5 hover:text-primary stroke-current"
-                    @click.stop="$router.push({ name: 'home' })"
+                    @click.stop="$router.push({ name: 'audio_edit', params: {room_id: tr.room.id, id: tr.id} })"
                   />
                   <feather-icon
                     icon="TrashIcon"

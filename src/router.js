@@ -59,7 +59,7 @@ const router = new Router({
 
         // Audio view
         {
-          path: '/audio/:id/view',
+          path: '/room/:room_id/audio/:id/view',
           name: 'audio_view',
           component: () => import('./views/pages/audio/View.vue'),
           meta: {
@@ -69,6 +69,40 @@ const router = new Router({
               { title: 'Audio view', active: true}
             ],
             pageTitle: 'Audio View',
+            rule: 'editor',
+            authRequired: 'require'
+          }
+        },
+
+        // Audio create
+        {
+          path: '/room/:room_id/audio/create',
+          name: 'audio_create',
+          component: () => import('./views/pages/audio/Create.vue'),
+          meta: {
+            breadcrumb: [
+              { title: 'Home', url: '/' },
+              { title: 'Room', url: '/room' },
+              { title: 'Audio create', active: true }
+            ],
+            pageTitle: 'Audio Create',
+            rule: 'editor',
+            authRequired: 'require'
+          }
+        },
+
+        // Audio edit
+        {
+          path: '/room/:room_id/audio/:id/edit',
+          name: 'audio_edit',
+          component: () => import('./views/pages/audio/Edit.vue'),
+          meta: {
+            breadcrumb: [
+              { title: 'Home', url: '/' },
+              { title: 'Room', url: '/room' },
+              { title: 'Audio edit', active: true }
+            ],
+            pageTitle: 'Audio Edit',
             rule: 'editor',
             authRequired: 'require'
           }
