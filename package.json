@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-countdown": "^1.1.2",
+    "adapterjs": "^0.15.4",
     "ag-grid-community": "^21.0.1",
     "ag-grid-vue": "^21.0.1",
     "algoliasearch": "^3.33.0",
@@ -28,6 +29,7 @@
     "prismjs": "^1.16.0",
     "qrcode.vue": "^1.7.0",
     "randomstring": "^1.1.5",
+    "rtcmulticonnection": "^3.7.0",
     "vee-validate": "^2.2.8",
     "vue": "^2.6.10",
     "vue-acl": "4.0.7",

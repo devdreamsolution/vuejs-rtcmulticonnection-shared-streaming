@@ -16,7 +16,9 @@ import VxBreadcrumb  from './layouts/components/VxBreadcrumb.vue'
 import FeatherIcon  from './components/FeatherIcon.vue'
 import VxInputGroup  from './components/vx-input-group/VxInputGroup.vue'
 import VxQrCode from './components/vx-qrcode/VxQrcode.vue'
+import WebRTC from "./components/vx-broadcast/VxBroadCast.vue"
 
+Vue.component(WebRTC.name, WebRTC)
 Vue.component(VxTooltip.name, VxTooltip)
 Vue.component(VxCard.name, VxCard)
 Vue.component(VxList.name, VxList)

@@ -59,6 +59,38 @@
             </table>
           </div>
         </div>
+        <div id="live-streaming">
+
+          <div class="row">
+            <div class="col-md-12 my-3 mt-6">
+              <h3>Live streaming</h3>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="">
+                <vue-webrtc ref="webrtc"
+                  width="100%"
+                  :roomId="roomId"
+                  v-on:joined-room="logEvent"
+                  v-on:left-room="logEvent"
+                  v-on:opened-room="logEvent"
+                  v-on:share-started="logEvent"
+                  v-on:share-stopped="logEvent"
+                  @error="onError"
+                />
+              </div>
+              <div class="row">
+                <div class="col-md-12 my-3">
+                  <vs-button color="primary" v-if="userRoles.includes('ROLE_GUIDE')" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
+                  <vs-button color="success" class="mr-2" type="filled" @click="onJoin">Join</vs-button>
+                  <vs-button color="warning" class="mr-2" type="filled" @click="onLeave">Leave</vs-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </vx-card>
     </div>
 
@@ -181,6 +213,7 @@ export default {
       itemsPerPage: 4,
       selected: [],
       isMounted: false,
+      roomId: this.$route.params.qr_code
     }
   },
   methods: {
@@ -201,6 +234,21 @@ export default {
       this.$store.dispatch("moduleAudio/removeAudio", id).catch(err => {
         console.error(err);
       });
+    },
+    logEvent(event) {
+      console.log('Event : ', event);
+    },
+    onError(error, stream) {
+      console.log('On Error Event', error, stream);
+    },
+    onOpen () {
+      this.$refs.webrtc.open();
+    },
+    onJoin() {
+      this.$refs.webrtc.join();
+    },
+    onLeave() {
+      this.$refs.webrtc.leave();
     },
   },
   computed: {

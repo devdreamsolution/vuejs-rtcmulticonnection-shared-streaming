@@ -20,12 +20,14 @@ module.exports = {
         chunks: 'all'
       }
     }
-  }
+  },
   // devServer: {
   //   overlay: {
   //     warnings: true,
   //     errors: true
-  //   }
+  //   },
+  //   public: 'http://192.168.107.122:8082',
+  //   allowedHosts: ['192.168.107.122']
   // }
 }
 

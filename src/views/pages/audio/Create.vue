@@ -30,7 +30,7 @@ export default {
   methods: {
     callback (data) {
       // console.log('success')
-    },
+    }
   }
 }
 </script>
