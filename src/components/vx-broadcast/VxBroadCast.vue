@@ -21,7 +21,6 @@
         rtcmConnection: null,
         localAudio: null,
         audioList: [],
-        canvas: null,
       }
     },
     props: {
@@ -72,7 +71,7 @@
       this.rtcmConnection.enableLogs = this.enableLogs
       this.rtcmConnection.session = {
         audio: this.enableAudio,
-        // video: this.enableVideo,
+        video: this.enableVideo,
         oneway: this.enableOneWay
       }
       this.rtcmConnection.sdpConstraints.mandatory = {
@@ -117,42 +116,35 @@
       }
     },
     methods: {
-      join() {
-        // let that = this
-        // this.rtcmConnection.openOrJoin(this.roomId, function (isRoomExist, roomid) {
-        //   if (isRoomExist === false && that.rtcmConnection.isInitiator === true) {
-        //     that.$emit('opened-room', roomid)
-        //   }
-        // })
-
+      join () {
         this.rtcmConnection.join(this.roomId)
       },
       open () {
         this.rtcmConnection.open(this.roomId)
       },
-      leave() {
+      leave () {
         this.rtcmConnection.attachStreams.forEach(function (localStream) {
           localStream.stop()
         })
         this.audioList = []
       },
-      capture() {
-        return this.getCanvas().toDataURL(this.screenshotFormat)
-      },
-      getCanvas() {
-        let audio = this.getCurrentAudio()
-        if (audio !== null && !this.ctx) {
-          let canvas = document.createElement('canvas')
-          canvas.height = audio.clientHeight
-          canvas.width = audio.clientWidth
-          this.canvas = canvas
-          this.ctx = canvas.getContext('2d')
-        }
-        const { ctx, canvas } = this
-        ctx.drawImage(audio, 0, 0, canvas.width, canvas.height)
-        return canvas
-      },
-      getCurrentAudio() {
+      // capture() {
+      //   return this.getCanvas().toDataURL(this.screenshotFormat)
+      // },
+      // getCanvas() {
+      //   let audio = this.getCurrentAudio()
+      //   if (audio !== null && !this.ctx) {
+      //     let canvas = document.createElement('canvas')
+      //     canvas.height = audio.clientHeight
+      //     canvas.width = audio.clientWidth
+      //     this.canvas = canvas
+      //     this.ctx = canvas.getContext('2d')
+      //   }
+      //   const { ctx, canvas } = this
+      //   ctx.drawImage(audio, 0, 0, canvas.width, canvas.height)
+      //   return canvas
+      // },
+      getCurrentAudio () {
         if (this.localAudio === null) {
           return null
         }
@@ -162,45 +154,42 @@
         }
         return null
       },
-      shareScreen() {
-        let that = this;
-        if (navigator.getDisplayMedia || navigator.mediaDevices.getDisplayMedia) {
-          function addStreamStopListener(stream, callback) {
-            let streamEndedEvent = 'ended'
-            if ('oninactive' in stream) {
-                streamEndedEvent = 'inactive'
-            }
-            stream.addEventListener(streamEndedEvent, function() {
-                callback()
-                callback = function() {}
-            }, false)
-          }
-          function onGettingSteam(stream) {
-            that.rtcmConnection.addStream(stream)
-            that.$emit('share-started', stream.streamid)
-            addStreamStopListener(stream, function() {
-              that.rtcmConnection.removeStream(stream.streamid)
-              that.$emit('share-stopped', stream.streamid)
-            })
-          }
-          function getDisplayMediaError(error) {
-            console.log('Media error: ' + JSON.stringify(error))
-          }
-          if (navigator.mediaDevices.getDisplayMedia) {
-            navigator.mediaDevices.getDisplayMedia({video: true, audio: false}).then(stream => {
-              onGettingSteam(stream);
-            }, getDisplayMediaError).catch(getDisplayMediaError)
-          }
-          else if (navigator.getDisplayMedia) {
-            navigator.getDisplayMedia({video: true}).then(stream => {
-              onGettingSteam(stream);
-            }, getDisplayMediaError).catch(getDisplayMediaError)
-          }
-        }
-      }
+      // shareScreen() {
+      //   let that = this;
+      //   if (navigator.getDisplayMedia || navigator.mediaDevices.getDisplayMedia) {
+      //     function addStreamStopListener(stream, callback) {
+      //       let streamEndedEvent = 'ended'
+      //       if ('oninactive' in stream) {
+      //           streamEndedEvent = 'inactive'
+      //       }
+      //       stream.addEventListener(streamEndedEvent, function() {
+      //           callback()
+      //           callback = function() {}
+      //       }, false)
+      //     }
+      //     function onGettingSteam(stream) {
+      //       that.rtcmConnection.addStream(stream)
+      //       that.$emit('share-started', stream.streamid)
+      //       addStreamStopListener(stream, function() {
+      //         that.rtcmConnection.removeStream(stream.streamid)
+      //         that.$emit('share-stopped', stream.streamid)
+      //       })
+      //     }
+      //     function getDisplayMediaError(error) {
+      //       console.log('Media error: ' + JSON.stringify(error))
+      //     }
+      //     if (navigator.mediaDevices.getDisplayMedia) {
+      //       navigator.mediaDevices.getDisplayMedia({video: true, audio: false}).then(stream => {
+      //         onGettingSteam(stream);
+      //       }, getDisplayMediaError).catch(getDisplayMediaError)
+      //     }
+      //     else if (navigator.getDisplayMedia) {
+      //       navigator.getDisplayMedia({video: true}).then(stream => {
+      //         onGettingSteam(stream);
+      //       }, getDisplayMediaError).catch(getDisplayMediaError)
+      //     }
+      //   }
+      // }
     }
-  };
+  }
 </script>
-<style lang="scss">
-
-</style>

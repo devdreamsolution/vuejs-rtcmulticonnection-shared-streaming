@@ -82,7 +82,7 @@
               </div>
               <div class="row">
                 <div class="col-md-12 my-3">
-                  <vs-button color="primary" v-if="userRoles.includes('ROLE_GUIDE')" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
+                  <vs-button color="primary" v-if="UserInfo.id == room_data.owner.id" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
                   <vs-button color="success" class="mr-2" type="filled" @click="onJoin">Join</vs-button>
                   <vs-button color="warning" class="mr-2" type="filled" @click="onLeave">Leave</vs-button>
                 </div>
@@ -245,6 +245,7 @@ export default {
       this.$refs.webrtc.open();
     },
     onJoin() {
+      console.log(localStorage.getItem('UserInfo'))
       this.$refs.webrtc.join();
     },
     onLeave() {
@@ -252,9 +253,11 @@ export default {
     },
   },
   computed: {
-    userRoles()
-    {
+    userRoles() {
       return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : []
+    },
+    UserInfo() {
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : []
     },
     currentPage () {
       if (this.isMounted) {
