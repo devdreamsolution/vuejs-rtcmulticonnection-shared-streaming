@@ -1,16 +1,15 @@
 <template>
-  <div class="the-navbar__user-meta flex items-center" v-if="activeUserInfo.displayName">
+  <div class="the-navbar__user-meta flex items-center" v-if="UserInfo">
     <div class="text-right leading-tight hidden sm:block">
-      <p class="font-semibold">{{ activeUserInfo.displayName }}</p>
+      <p class="font-semibold">{{ UserInfo.name }} {{ UserInfo.surename }}</p>
       <small>Available</small>
     </div>
-
     <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
       <div class="con-img ml-3">
         <img
-          v-if="activeUserInfo.photoURL"
+          v-if="UserInfo.picture"
           key="onlineImg"
-          :src="activeUserInfo.photoURL"
+          :src="UserInfo.picture"
           alt="user-img"
           width="40"
           height="40"
@@ -63,8 +62,11 @@
 <script>
 export default {
   computed: {
-    activeUserInfo () {
-      return this.$store.state.AppActiveUser
+    // activeUserInfo () {
+    //   return this.$store.state.AppActiveUser
+    // },
+    UserInfo () {
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : []
     }
   },
   methods: {
