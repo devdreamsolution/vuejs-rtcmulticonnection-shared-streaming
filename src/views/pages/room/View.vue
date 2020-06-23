@@ -170,7 +170,7 @@
 
                 <vs-td>
                   <!-- <p class="product-category" @click.stop="$router.push({ name: 'audio_view', params: {room_id: tr.room.id ,id: tr.id} })">{{ tr.audio }}</p> -->
-                  <p class="product-category" @click.stop=""><audio-player :src="tr.audio"/></p>
+                  <p class="product-category" @click.stop=""><audio controls :src="tr.audio"></audio></p>
                 </vs-td>
 
                 <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
@@ -245,7 +245,6 @@ export default {
       this.$refs.webrtc.open();
     },
     onJoin() {
-      console.log(localStorage.getItem('UserInfo'))
       this.$refs.webrtc.join();
     },
     onLeave() {

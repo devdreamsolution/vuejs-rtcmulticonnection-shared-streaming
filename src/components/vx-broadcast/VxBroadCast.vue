@@ -1,10 +1,11 @@
 <template>
   <div class="audio-list" >
-      <div v-for="item in audioList"
-          v-bind:key="item.id"
-          class="audio-item">
-        <audio controls autoplay playsinline ref="audios" :height="cameraHeight" :muted="item.muted" :id="item.id"></audio>
-      </div>
+    <div v-for="item in audioList"
+      v-bind:key="item.id"
+      class="audio-item">
+      <audio controls autoplay playsinline ref="audios" :muted="item.muted" :id="item.id"></audio>
+    </div>
+    {{ counter }}
   </div>
 </template>
 
@@ -21,6 +22,7 @@
         rtcmConnection: null,
         localAudio: null,
         audioList: [],
+        counter: 0,
       }
     },
     props: {
@@ -31,10 +33,6 @@
       socketURL: {
         type: String,
         default: 'https://rtcmulticonnection.herokuapp.com:443/'
-      },
-      cameraHeight: {
-        type: [Number, String],
-        default: 160
       },
       autoplay: {
         type: Boolean,
@@ -50,7 +48,7 @@
       },
       enableVideo: {
         type: Boolean,
-        default: true
+        default: false
       },
       enableLogs: {
         type: Boolean,
@@ -78,6 +76,10 @@
         OfferToReceiveAudio: this.enableAudio,
         OfferToReceiveVideo: this.enableVideo
       }
+      this.rtcmConnection.mediaConstraints = {
+        audio: this.enableAudio,
+        video: this.enableVideo
+      }
       this.rtcmConnection.onstream = function (stream) {
         let found = that.audioList.find(audio => {
           return audio.id === stream.streamid
@@ -97,12 +99,13 @@
             if (that.$refs.audios[i].id === stream.streamid)
             {
               that.$refs.audios[i].srcObject = stream.stream
+              if (stream.type == 'local') {
+                that.$refs.audios[i].muted = true
+              }
               break
             }
           }
         }, 1000)
-
-        that.$emit('joined-room', stream.streamid)
       }
       this.rtcmConnection.onstreamended = function (stream) {
         let newList = []
@@ -112,7 +115,6 @@
           }
         })
         that.audioList = newList
-        that.$emit('left-room', stream.streamid)
       }
     },
     methods: {
@@ -128,68 +130,6 @@
         })
         this.audioList = []
       },
-      // capture() {
-      //   return this.getCanvas().toDataURL(this.screenshotFormat)
-      // },
-      // getCanvas() {
-      //   let audio = this.getCurrentAudio()
-      //   if (audio !== null && !this.ctx) {
-      //     let canvas = document.createElement('canvas')
-      //     canvas.height = audio.clientHeight
-      //     canvas.width = audio.clientWidth
-      //     this.canvas = canvas
-      //     this.ctx = canvas.getContext('2d')
-      //   }
-      //   const { ctx, canvas } = this
-      //   ctx.drawImage(audio, 0, 0, canvas.width, canvas.height)
-      //   return canvas
-      // },
-      getCurrentAudio () {
-        if (this.localAudio === null) {
-          return null
-        }
-        for (let i = 0, len = this.$refs.audios.length; i < len; i++) {
-          if (this.$refs.audios[i].id === this.localAudio.id)
-            return this.$refs.audios[i]
-        }
-        return null
-      },
-      // shareScreen() {
-      //   let that = this;
-      //   if (navigator.getDisplayMedia || navigator.mediaDevices.getDisplayMedia) {
-      //     function addStreamStopListener(stream, callback) {
-      //       let streamEndedEvent = 'ended'
-      //       if ('oninactive' in stream) {
-      //           streamEndedEvent = 'inactive'
-      //       }
-      //       stream.addEventListener(streamEndedEvent, function() {
-      //           callback()
-      //           callback = function() {}
-      //       }, false)
-      //     }
-      //     function onGettingSteam(stream) {
-      //       that.rtcmConnection.addStream(stream)
-      //       that.$emit('share-started', stream.streamid)
-      //       addStreamStopListener(stream, function() {
-      //         that.rtcmConnection.removeStream(stream.streamid)
-      //         that.$emit('share-stopped', stream.streamid)
-      //       })
-      //     }
-      //     function getDisplayMediaError(error) {
-      //       console.log('Media error: ' + JSON.stringify(error))
-      //     }
-      //     if (navigator.mediaDevices.getDisplayMedia) {
-      //       navigator.mediaDevices.getDisplayMedia({video: true, audio: false}).then(stream => {
-      //         onGettingSteam(stream);
-      //       }, getDisplayMediaError).catch(getDisplayMediaError)
-      //     }
-      //     else if (navigator.getDisplayMedia) {
-      //       navigator.getDisplayMedia({video: true}).then(stream => {
-      //         onGettingSteam(stream);
-      //       }, getDisplayMediaError).catch(getDisplayMediaError)
-      //     }
-      //   }
-      // }
     }
   }
 </script>

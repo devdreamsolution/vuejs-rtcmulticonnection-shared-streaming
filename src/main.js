@@ -62,6 +62,10 @@ Vue.use(VeeValidate)
 import VueSwal from 'vue-swal'
 Vue.use(VueSwal)
 
+// Audio player
+import AudioVisual from 'vue-audio-visual'
+Vue.use(AudioVisual)
+
 // PrismJS
 import 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'
