@@ -71,7 +71,8 @@
               <div class="">
                 <vue-webrtc ref="webrtc"
                   width="100%"
-                  :roomId="roomId"
+                  :broadcastId="broadcastId"
+                  :roomData="room_data"
                   v-on:joined-room="logEvent"
                   v-on:left-room="logEvent"
                   v-on:opened-room="logEvent"
@@ -80,16 +81,8 @@
                   @error="onError"
                 />
               </div>
-              <div class="row">
-                <div class="col-md-12 my-3">
-                  <vs-button color="primary" v-if="UserInfo.id == room_data.owner.id" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
-                  <vs-button color="success" class="mr-2" type="filled" @click="onJoin">Join</vs-button>
-                  <vs-button color="warning" class="mr-2" type="filled" @click="onLeave">Leave</vs-button>
-                </div>
-              </div>
             </div>
           </div>
-
         </div>
       </vx-card>
     </div>
@@ -108,14 +101,14 @@
           <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
             <div class="flex flex-wrap-reverse items-center">
               <!-- ACTION - DROPDOWN -->
-              <div
+              <!-- <div
                 class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-danger border border-solid border-danger"
                 v-if="userRoles.includes('ROLE_GUIDE')"
                 @click="removeSelectedData"
               >
                 <feather-icon icon="DeleteIcon" svgClasses="h-4 w-4" />
                 <span class="ml-2 text-base text-danger">Delete</span>
-              </div>
+              </div> -->
 
               <!-- ADD NEW -->
               <div
@@ -213,7 +206,8 @@ export default {
       itemsPerPage: 4,
       selected: [],
       isMounted: false,
-      roomId: this.$route.params.qr_code
+      broadcastId: this.$route.params.qr_code,
+      isBroadCast: false
     }
   },
   methods: {
@@ -232,23 +226,14 @@ export default {
     },
     deleteData (id) {
       this.$store.dispatch("moduleAudio/removeAudio", id).catch(err => {
-        console.error(err);
+        console.error(err)
       });
     },
     logEvent(event) {
-      console.log('Event : ', event);
+      console.log('Event : ', event)
     },
     onError(error, stream) {
-      console.log('On Error Event', error, stream);
-    },
-    onOpen () {
-      this.$refs.webrtc.open();
-    },
-    onJoin() {
-      this.$refs.webrtc.join();
-    },
-    onLeave() {
-      this.$refs.webrtc.leave();
+      console.log('On Error Event', error, stream)
     },
   },
   computed: {
@@ -262,7 +247,7 @@ export default {
       if (this.isMounted) {
         return this.$refs.table.currentx
       }
-      return 0;
+      return 0
     },
     audiosByQrCode () {
       return this.$store.state.moduleAudio.audios

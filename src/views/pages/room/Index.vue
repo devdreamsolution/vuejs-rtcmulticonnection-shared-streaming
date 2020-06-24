@@ -22,14 +22,14 @@
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
         <div class="flex flex-wrap-reverse items-center">
           <!-- ACTION - DROPDOWN -->
-          <div
+          <!-- <div
             class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-danger border border-solid border-danger"
             v-if="userRoles.includes('ROLE_GUIDE')"
             @click="removeSelectedData"
           >
             <feather-icon icon="DeleteIcon" svgClasses="h-4 w-4" />
             <span class="ml-2 text-base text-danger">Delete</span>
-          </div>
+          </div> -->
 
           <!-- ADD NEW -->
           <div
