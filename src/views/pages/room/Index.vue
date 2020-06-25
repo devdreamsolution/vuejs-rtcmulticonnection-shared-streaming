@@ -9,7 +9,6 @@
     <vs-popup :title="qrCodeModalTitle" :active.sync="popupActive">
        <vx-qrcode :value="qrCodeModalValue" :size=250 class="vx-qrcode"/>
     </vs-popup>
-
     <vs-table
       ref="table"
       multiple
@@ -81,7 +80,7 @@
           <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
             <vs-td class="img-container">
               <a @click.stop="showQrCode(tr)">
-                <vx-qrcode :value="apiURL + '/room/view/' + tr.qr_code" :size=100 class="product-img"  @click.stop="editData(tr)"/>
+                <vx-qrcode :value="baseUrl + '/view/' + tr.qr_code" :size=100 class="product-img"  @click.stop="editData(tr)"/>
               </a>
             </vs-td>
 
@@ -133,7 +132,8 @@ export default {
       apiURL: apiURL,
       popupActive: false,
       qrCodeModalTitle: '',
-      qrCodeModalValue: ''
+      qrCodeModalValue: '',
+      baseUrl: window.location.href
     }
   },
   computed: {
@@ -186,7 +186,7 @@ export default {
     showQrCode(data)
     {
       this.qrCodeModalTitle = data.name
-      this.qrCodeModalValue = apiURL + '/room/view/' + data.qr_code
+      this.qrCodeModalValue = this.baseUrl +'/view/' + data.qr_code
       this.popupActive = true
 
     },

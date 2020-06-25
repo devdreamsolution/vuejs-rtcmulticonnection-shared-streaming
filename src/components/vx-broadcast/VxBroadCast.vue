@@ -8,6 +8,10 @@
         <vs-button color="primary" :disabled="isDisableOpen" v-if="UserInfo.id == roomData.owner.id" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
         <vs-button color="success" :disabled="isDisableJoin" class="mr-2" type="filled" @click="onJoin">Join</vs-button>
         <vs-button color="warning" :disabled="isDisableLeave" class="mr-2" type="filled" @click="onLeave">Leave</vs-button>
+
+
+        <vs-button color="warning" class="mr-2" type="filled" @click="onStart">Start</vs-button>
+        <vs-button color="warning" class="mr-2" type="filled" @click="onStop">Stop</vs-button>
       </div>
     </div>
   </div>
@@ -24,6 +28,7 @@
     data() {
       return {
         rtcmConnection: null,
+        recorder: null,
         viewerCount: null,
         isShowCounter: false,
         isBroadcastExists: false,
@@ -229,6 +234,22 @@
       checkBroadcast()
     },
     methods: {
+      onStart () {
+        let that = this
+        navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true
+        })
+        .then(async function(stream) {
+          that.recorder = RecordRTC(stream, {
+            type: 'audio'
+          })
+          recorder.startRecording()
+        })
+      },
+      onStop () {
+
+      },
       onJoin () {
         let that = this
         let broadcastId = this.broadcastId

@@ -66,6 +66,9 @@ Vue.use(VueSwal)
 import AudioVisual from 'vue-audio-visual'
 Vue.use(AudioVisual)
 
+import AudioRecorder from 'vue-audio-recorder'
+Vue.use(AudioRecorder)
+
 // PrismJS
 import 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'
