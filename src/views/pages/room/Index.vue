@@ -186,7 +186,7 @@ export default {
     showQrCode(data)
     {
       this.qrCodeModalTitle = data.name
-      this.qrCodeModalValue = this.baseUrl +'/view/' + data.qr_code
+      this.qrCodeModalValue = this.baseUrl + '/view/' + data.qr_code
       this.popupActive = true
 
     },
