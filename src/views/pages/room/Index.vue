@@ -80,7 +80,7 @@
           <vs-tr :data="tr" :key="indextr"  v-for="(tr, indextr) in data">
             <vs-td class="img-container">
               <a @click.stop="showQrCode(tr)">
-                <vx-qrcode :value="baseUrl + '/view/' + tr.qr_code" :size=100 class="product-img"  @click.stop="editData(tr)"/>
+                <vx-qrcode :value="baseUrl + '/' + tr.id + '/view/' + tr.qr_code" :size=100 class="product-img"  @click.stop="editData(tr)"/>
               </a>
             </vs-td>
 
@@ -92,17 +92,19 @@
               <p class="product-category">{{ tr.description }}</p>
             </vs-td>
 
-            <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
+            <vs-td class="whitespace-no-wrap">
               <feather-icon
                 icon="EditIcon"
                 svgClasses="w-5 h-5 hover:text-primary stroke-current"
                 @click.stop="editData(tr)"
+                v-if="userRoles.includes('ROLE_GUIDE') && UserInfo.id == tr.owner.id"
               />
               <feather-icon
                 icon="TrashIcon"
                 svgClasses="w-5 h-5 hover:text-danger stroke-current"
                 class="ml-2"
                 @click.stop="deleteData(tr.id)"
+                v-if="userRoles.includes('ROLE_GUIDE') && UserInfo.id == tr.owner.id"
               />
             </vs-td>
           </vs-tr>
@@ -140,6 +142,9 @@ export default {
     userRoles()
     {
       return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : []
+    },
+    UserInfo() {
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : []
     },
     currentPage () {
       if (this.isMounted) {
@@ -186,7 +191,7 @@ export default {
     showQrCode(data)
     {
       this.qrCodeModalTitle = data.name
-      this.qrCodeModalValue = this.baseUrl + '/view/' + data.qr_code
+      this.qrCodeModalValue = this.baseUrl + '/' + data.id + '/view/' + data.qr_code
       this.popupActive = true
 
     },

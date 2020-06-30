@@ -1,15 +1,25 @@
 <template>
-  <div class="the-navbar__user-meta flex items-center" v-if="UserInfo">
+  <div class="the-navbar__user-meta flex items-center">
     <div class="text-right leading-tight hidden sm:block">
-      <p class="font-semibold">{{ UserInfo.name }} {{ UserInfo.surename }}</p>
+      <p class="font-semibold" v-if="UserInfo">{{ UserInfo.name }} {{ UserInfo.surename }}</p>
+      <p class="font-semibold" v-else>Unknown</p>
       <small>Available</small>
     </div>
     <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
       <div class="con-img ml-3">
         <img
-          v-if="UserInfo.picture"
+          v-if="UserInfo"
           key="onlineImg"
           :src="UserInfo.picture"
+          alt="user-img"
+          width="40"
+          height="40"
+          class="rounded-full shadow-md cursor-pointer block"
+        />
+        <img
+          v-else
+          key="onlineImg"
+          :src="apiURL + '/assets/images/unknown-avatar.jpg'"
           alt="user-img"
           width="40"
           height="40"
@@ -48,10 +58,11 @@
 
           <li
             class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-            @click="logout"
+            @click="loginOrLogout"
           >
             <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4" />
-            <span class="ml-2">Logout</span>
+            <span class="ml-2" v-if="UserInfo">Logout</span>
+            <span class="ml-2" v-else>Login</span>
           </li>
         </ul>
       </vs-dropdown-menu>
@@ -60,23 +71,30 @@
 </template>
 
 <script>
+import {apiURL} from '@/axios.js'
+
 export default {
+  data () {
+    return {
+      apiURL: apiURL,
+    }
+  },
   computed: {
     // activeUserInfo () {
     //   return this.$store.state.AppActiveUser
     // },
     UserInfo () {
-      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : []
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : null
     }
   },
   methods: {
-    logout () {
+    loginOrLogout () {
       localStorage.removeItem('UserInfo')
       localStorage.removeItem('AccessToken')
       localStorage.removeItem("RefreshToken")
       // This is just for demo Purpose. If user clicks on logout -> redirect
       this.$router.push('/auth/login').catch(() => {})
-    }
+    },
   }
 }
 </script>

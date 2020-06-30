@@ -1,5 +1,5 @@
 <template>
-  <div id="audio-create">
+  <div class="mt-5" id="audio-create">
     <audio-recorder
       :upload-url="uploadUrl"
       :attempts="1"

@@ -67,10 +67,9 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="">
                 <vue-webrtc ref="webrtc"
-                  width="100%"
                   :broadcastId="broadcastId"
                   :roomData="room_data"
                   v-on:joined-room="logEvent"
@@ -81,6 +80,15 @@
                   @error="onError"
                 />
               </div>
+            </div>
+            <div class="col-md-6" v-if="UserInfo">
+              <audio-recorder
+                :upload-url="uploadURL"
+                :attempts="1"
+                :time="20"
+                :successful-upload="successCallback"
+                v-if="UserInfo.id == room_data.owner.id"
+              />
             </div>
           </div>
         </div>
@@ -99,28 +107,6 @@
           :data="audiosByQrCode"
         >
           <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
-            <div class="flex flex-wrap-reverse items-center">
-              <!-- ACTION - DROPDOWN -->
-              <!-- <div
-                class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-danger border border-solid border-danger"
-                v-if="userRoles.includes('ROLE_GUIDE')"
-                @click="removeSelectedData"
-              >
-                <feather-icon icon="DeleteIcon" svgClasses="h-4 w-4" />
-                <span class="ml-2 text-base text-danger">Delete</span>
-              </div> -->
-
-              <!-- ADD NEW -->
-              <div
-                class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary"
-                @click="$router.push({ name: 'audio_create', params: {room_id: room_data.id} })"
-                v-if="userRoles.includes('ROLE_GUIDE')"
-              >
-                <feather-icon icon="PlusIcon" svgClasses="h-4 w-4" />
-                <span class="ml-2 text-base text-primary">Add Audio</span>
-              </div>
-            </div>
-
             <!-- ITEMS PER PAGE -->
             <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
               <div
@@ -151,7 +137,9 @@
           <template slot="thead">
             <vs-th sort-key="recorder">Recorder</vs-th>
             <vs-th sort-key="audio">Audio</vs-th>
-            <vs-th v-if="userRoles.includes('ROLE_GUIDE')">Action</vs-th>
+            <div v-if="UserInfo">
+              <vs-th v-if="UserInfo.roles.includes('ROLE_GUIDE')">Action</vs-th>
+            </div>
           </template>
 
           <template slot-scope="{data}">
@@ -166,19 +154,17 @@
                   <p class="product-category" @click.stop=""><audio controls :src="tr.audio"></audio></p>
                 </vs-td>
 
-                <vs-td class="whitespace-no-wrap" v-if="userRoles.includes('ROLE_GUIDE')">
-                  <!-- <feather-icon
-                    icon="EditIcon"
-                    svgClasses="w-5 h-5 hover:text-primary stroke-current"
-                    @click.stop="$router.push({ name: 'audio_edit', params: {room_id: tr.room.id, id: tr.id} })"
-                  /> -->
-                  <feather-icon
-                    icon="TrashIcon"
-                    svgClasses="w-5 h-5 hover:text-danger stroke-current"
-                    class="ml-2"
-                    @click.stop="deleteData(tr.id)"
-                  />
-                </vs-td>
+                <div v-if="UserInfo">
+                  <vs-td class="whitespace-no-wrap" v-if="UserInfo.roles.includes('ROLE_GUIDE')">
+                    <feather-icon
+                      icon="TrashIcon"
+                      svgClasses="w-5 h-5 hover:text-danger stroke-current"
+                      class="ml-2"
+                      @click.stop="deleteData(tr.id)"
+                      v-if="UserInfo.id == tr.recorder.id"
+                    />
+                  </vs-td>
+                </div>
               </vs-tr>
             </tbody>
           </template>
@@ -192,11 +178,6 @@
 import moduleRoom from '@/store/room/moduleRoom.js'
 import moduleAudio from '@/store/audio/moduleAudio.js'
 
-import AudioRecorder from 'vue-audio-recorder'
-import Vue from 'vue'
-
-Vue.use(AudioRecorder)
-
 export default {
   data () {
     return {
@@ -207,7 +188,8 @@ export default {
       selected: [],
       isMounted: false,
       broadcastId: this.$route.params.qr_code,
-      isBroadCast: false
+      isBroadCast: false,
+      uploadURL: "/api/audio/" + this.$route.params.id + "/create",
     }
   },
   methods: {
@@ -235,13 +217,35 @@ export default {
     onError(error, stream) {
       console.log('On Error Event', error, stream)
     },
+    successCallback () {
+      this.getAudios()
+    },
+    getAudios () {
+      const qr_code = this.$route.params.qr_code
+      if (!moduleAudio.isRegistered) {
+        this.$store.registerModule('moduleAudio', moduleAudio)
+        moduleAudio.isRegistered = true
+      }
+      this.$store.dispatch('moduleAudio/fetchAudiosByQrCode', qr_code)
+        .then (response => {
+          if (response.data.success) {
+            this.room_not_found = false
+            this.room_data = response.data.data.current_room
+          } else {
+            this.room_not_found = true;
+            this.error_message = response.data.message
+          }
+        })
+        .catch (error => {
+          this.room_not_found = true
+          this.error_message = `Room record with QR code: ${qr_code} not found`
+          return
+        })
+    }
   },
   computed: {
-    userRoles() {
-      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')).roles : []
-    },
     UserInfo() {
-      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : []
+      return localStorage.getItem('UserInfo') ? JSON.parse(localStorage.getItem('UserInfo')) : null
     },
     currentPage () {
       if (this.isMounted) {
@@ -259,61 +263,7 @@ export default {
     }
   },
   created () {
-    // const qr_code = this.$route.params.qr_code
-    // if (!moduleRoom.isRegistered) {
-    //   this.$store.registerModule('moduleRoom', moduleRoom)
-    //   moduleRoom.isRegistered = true
-    // }
-    // this.$store.dispatch('moduleRoom/fetchRoomByQrCode', qr_code)
-    //   .then (response => {
-    //     if (response.data.success) {
-    //       this.room_not_found = false
-    //       this.room_data = response.data.data
-
-    //       const room_id = this.room_data.id
-    //       if (!moduleAudio.isRegistered) {
-    //         this.$store.registerModule('moduleAudio', moduleAudio)
-    //         moduleAudio.isRegistered = true
-    //       }
-    //       this.$store.dispatch('moduleAudio/fetchAudiosByRoomId', room_id)
-    //       .then (response => {
-
-    //       })
-    //       .catch (error => {
-
-    //       })
-
-    //     } else {
-    //       this.room_not_found = true;
-    //       this.error_message = response.data.message
-    //     }
-    //   })
-    //   .catch (error => {
-    //     if (error.response.status == 404) {
-    //       this.room_not_found = true
-    //       this.error_message = `Room record with QR code: ${route.params.qr_code} not found`
-    //     }
-    //   })
-    const qr_code = this.$route.params.qr_code
-    if (!moduleAudio.isRegistered) {
-      this.$store.registerModule('moduleAudio', moduleAudio)
-      moduleAudio.isRegistered = true
-    }
-    this.$store.dispatch('moduleAudio/fetchAudiosByQrCode', qr_code)
-      .then (response => {
-        if (response.data.success) {
-          this.room_not_found = false
-          this.room_data = response.data.data.current_room
-        } else {
-          this.room_not_found = true;
-          this.error_message = response.data.message
-        }
-      })
-      .catch (error => {
-        this.room_not_found = true
-        this.error_message = `Room record with QR code: ${qr_code} not found`
-        return
-      })
+    this.getAudios()
   },
   mounted () {
     this.isMounted = true
@@ -322,7 +272,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 #owner-avatar {
   width: 10rem;
 }
@@ -429,6 +378,24 @@ only screen and (min-width:636px) and (max-width:991px) {
   #account-info-col-2 {
     width: calc(100% - 12rem) !important;
   }
-}
 
+}
+@media screen and (max-width:636px) {
+  .ar-player {
+  width: auto !important;
+  
+  }
+  .ar-player-bar {
+    display: table !important;
+  }
+  .ar-records__record {
+    width: 270px !important;
+  }
+}
+.ar {
+  width: auto !important;
+}
+.ar-records {
+  height: 45px !important;
+}
 </style>

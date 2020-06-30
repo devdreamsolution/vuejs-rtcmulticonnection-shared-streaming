@@ -59,8 +59,11 @@
                       <vs-checkbox v-model="checkbox_remember_me" class="mb-3">Remember Me</vs-checkbox>
                       <router-link to="">Forgot Password?</router-link>
                   </div>
-                  <vs-button to="/auth/register" type="border">Register</vs-button>
-                  <vs-button @click.prevent="submitForm" class="float-right">Login</vs-button>
+
+                  <router-link class="flex flex-wrap mb-5" to="/room">Go to room</router-link>
+
+                  <vs-button to="/auth/register" type="border" class="mb-2">Register</vs-button>
+                  <vs-button @click.prevent="submitForm" class="float-right mb-2">Login</vs-button>
                 </form>
               </div>
             </div>
@@ -98,7 +101,10 @@ export default{
           }
 
           this.$store.dispatch('auth/loginJWT', payload)
-            .then(() => { this.$vs.loading.close() })
+            .then(() => {
+              this.$vs.loading.close()
+              this.$router.go(-1)
+            })
             .catch(error => {
               this.$vs.loading.close()
               this.$vs.notify({
