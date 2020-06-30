@@ -42,7 +42,7 @@ const router = new Router({
 
         // Room view, audio list
         {
-          path: '/room/view/:qr_code',
+          path: '/room/:id/view/:qr_code',
           name: 'room_view',
           component: () => import('./views/pages/room/View.vue'),
           meta: {
@@ -154,7 +154,7 @@ router.beforeEach((to, from, next) => {
   const loggedIn = localStorage.getItem('UserInfo');
   if (to.meta.authRequired) {
     if (!loggedIn) {
-      return next('/auth/login');
+      // return next('/auth/login');
     }
   } else if (loggedIn && !to.meta.error) {
     return next('/');
