@@ -8,10 +8,6 @@
         <vs-button color="primary" :disabled="isDisableOpen" v-if="UserInfo.id == roomData.owner.id" class="mr-2" type="filled" @click="onOpen">Open</vs-button>
         <vs-button color="success" :disabled="isDisableJoin" class="mr-2" type="filled" @click="onJoin">Join</vs-button>
         <vs-button color="warning" :disabled="isDisableLeave" class="mr-2" type="filled" @click="onLeave">Leave</vs-button>
-
-
-        <vs-button color="warning" class="mr-2" type="filled" @click="onStart">Start</vs-button>
-        <vs-button color="warning" class="mr-2" type="filled" @click="onStop">Stop</vs-button>
       </div>
     </div>
   </div>
@@ -46,7 +42,7 @@
       },
       socketURL: {
         type: String,
-        default: 'http://localhost:9001/'
+        default: 'https://rtcmulticonnection.herokuapp.com:443/'
       },
       autoplay: {
         type: Boolean,

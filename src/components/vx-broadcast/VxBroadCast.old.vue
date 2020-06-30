@@ -46,7 +46,7 @@
       },
       socketURL: {
         type: String,
-        default: 'http://localhost:9001/'
+        default: 'https://rtcmulticonnection.herokuapp.com:443/'
       },
       autoplay: {
         type: Boolean,
